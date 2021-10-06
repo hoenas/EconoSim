@@ -1,5 +1,5 @@
 use crate::resource::Resource;
 
-pub struct Stock {
-    resources: Vec<(Resource, f64)>,
+pub struct Stock <'a> {
+    resources: Vec<(&'a Resource, f64)>,
 }

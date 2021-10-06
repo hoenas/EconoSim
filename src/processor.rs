@@ -1,7 +1,7 @@
 use crate::recipe::Recipe;
 
-pub struct Processor {
+pub struct Processor <'a> {
     name: String,
     production_speed: f64,
-    recipe: Recipe,
+    recipe: Recipe <'a>,
 }
