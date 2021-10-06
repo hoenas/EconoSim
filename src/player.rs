@@ -1,6 +1,6 @@
 use crate::stock::Stock;
 
-pub struct Player <'a> {
+pub struct Player {
     name: String,
-    stock: Stock<'a>,
+    stock: Stock,
 }

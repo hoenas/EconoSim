@@ -1,7 +1,7 @@
-use crate::resource::Resource;
+use crate::resource::ResourceHandle;
 
-pub struct Recipe<'a> {
-    ingredients: Vec<(&'a Resource, f64)>,
-    product: &'a Resource,
+pub struct Recipe {
+    ingredients: Vec<(ResourceHandle, f64)>,
+    product: ResourceHandle,
     production_speed: f64,
 }
