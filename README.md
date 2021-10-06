@@ -3,7 +3,7 @@ Economy simulation written in Rust
 
 # Basic Structure
 
-```mermaid
+~~~mermaid
 graph TD;
     Marketplace-- holds -->Offer
     Player -- places offer -->Marketplace
@@ -16,4 +16,4 @@ graph TD;
     Offer -- includes --> Resource
     Consumer -- accepts offer --> Marketplace
     Event -- manipulates --> Consumer
-```
+~~~
