@@ -1,4 +1,6 @@
-struct Player {
+use crate::stock::Stock;
+
+pub struct Player {
     name: String,
-    stock: Stock
+    stock: Stock,
 }

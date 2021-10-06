@@ -1,3 +1,3 @@
-struct Resource {
-    name: String
+pub struct Resource {
+    name: String,
 }

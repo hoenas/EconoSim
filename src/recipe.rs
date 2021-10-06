@@ -1,5 +1,7 @@
-struct Recipe {
+use crate::resource::Resource;
+
+pub struct Recipe {
     ingredients: Vec<(&Resource, f64)>,
     product: &Resource,
-    production_speed: f64
+    production_speed: f64,
 }
