@@ -7,15 +7,13 @@ mod stock;
 use log::info;
 use resource::Resource;
 use simple_logger::SimpleLogger;
-use std::fs::File;
-use std::io::prelude::*;
 use std::{thread, time::Duration};
 
 fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
     // Create resources
-    let mut resources = Resource::read_resources_from_file("data/resource.yml".to_string());
+    let resources = Resource::read_resources_from_file("data/resource.yml".to_string());
 
     // Create stock
     let mut my_resources = Vec::new();

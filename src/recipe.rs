@@ -1,5 +1,9 @@
 use crate::resource::ResourceHandle;
+use serde::{Deserialize, Serialize};
 
+pub type RecipeHandle = usize;
+
+#[derive(Serialize, Deserialize)]
 pub struct Recipe {
     pub ingredients: Vec<(ResourceHandle, f64)>,
     pub products: Vec<(ResourceHandle, f64)>,
