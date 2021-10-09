@@ -28,7 +28,7 @@ fn main() {
     let mut my_resources = Vec::new();
     my_resources.push(1.0);
     my_resources.push(1.0);
-    my_resources.push(1.0);
+    my_resources.push(0.0);
     let mut my_stock = stock::Stock {
         resources: my_resources,
     };
@@ -50,9 +50,10 @@ fn main() {
         recipe: my_recipe,
     };
     // Sim loop
-    let periode = Duration::from_millis(500);
+    let periode = Duration::from_millis(1000);
+    my_stock.print_stock();
     loop {
-        info!("TICK");
+        info!("==========================================");
         my_processor.tick(&mut my_stock);
         my_stock.print_stock();
         thread::sleep(periode);
