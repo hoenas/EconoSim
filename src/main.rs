@@ -16,13 +16,13 @@ fn main() {
     // Create resources
     let mut resources = Vec::new();
     resources.push(Resource {
-        name: String::from("Wood"),
+        name: "Wood".to_string()
     });
     resources.push(Resource {
-        name: String::from("Clay"),
+        name: "Clay".to_string()
     });
     resources.push(Resource {
-        name: String::from("Coal"),
+        name: "Coal".to_string()
     });
     // Create stock
     let mut my_resources = Vec::new();
@@ -45,7 +45,7 @@ fn main() {
     };
     // Create processor
     let my_processor = processor::Processor {
-        name: String::from("Coal Pile"),
+        name: "Coal Pile".to_string(),
         production_speed: 0.1,
         recipe: my_recipe,
     };
