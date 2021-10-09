@@ -4,26 +4,19 @@ mod recipe;
 mod resource;
 mod stock;
 
-use resource::{Resource};
-use simple_logger::SimpleLogger;
-use std::{thread, time::Duration};
-
 use log::info;
+use resource::Resource;
+use simple_logger::SimpleLogger;
+use std::fs::File;
+use std::io::prelude::*;
+use std::{thread, time::Duration};
 
 fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
     // Create resources
-    let mut resources = Vec::new();
-    resources.push(Resource {
-        name: "Wood".to_string()
-    });
-    resources.push(Resource {
-        name: "Clay".to_string()
-    });
-    resources.push(Resource {
-        name: "Coal".to_string()
-    });
+    let mut resources = Resource::read_resources_from_file("data/resource.yml".to_string());
+
     // Create stock
     let mut my_resources = Vec::new();
     my_resources.push(1.0);

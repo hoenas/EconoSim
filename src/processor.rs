@@ -1,6 +1,8 @@
 use crate::recipe::Recipe;
 use crate::stock::Stock;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct Processor {
     pub name: String,
     pub production_speed: f64,
