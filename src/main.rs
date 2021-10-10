@@ -6,6 +6,7 @@ mod stock;
 mod world;
 
 use log::info;
+use world::World;
 use resource::Resource;
 use simple_logger::SimpleLogger;
 use std::{thread, time::Duration};
@@ -15,7 +16,7 @@ fn main() {
     info!("=== SIM TEST ===");
 
     // Create world
-    let mut world: world::World = Default::default();
+    let mut world: World = Default::default();
     // Create resources
     world.add_resource(Resource {
         name: "Wood".to_string(),
