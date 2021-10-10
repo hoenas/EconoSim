@@ -7,12 +7,13 @@ pub struct Processor {
     pub name: String,
     pub production_speed: f64,
     pub recipe: Recipe,
+    pub productive: bool,
 }
 
 impl<'a> Processor {
     pub fn tick(&self, stock: &mut Stock) {
         // Check if transaction can be done
-        if stock.make_transaction(&self.recipe.ingredients) {
+        if self.productive && stock.make_transaction(&self.recipe.ingredients) {
             // Transaction can be done, add generated resources to stock
             for (resource, production_factor) in self.recipe.products.iter() {
                 let amount = production_factor * self.production_speed;

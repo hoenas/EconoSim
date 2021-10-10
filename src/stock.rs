@@ -1,6 +1,10 @@
 use log::info;
+use serde::{Deserialize, Serialize};
 
 use crate::resource::ResourceHandle;
+
+#[derive(Serialize, Deserialize)]
+
 pub struct Stock {
     pub resources: Vec<f64>,
 }

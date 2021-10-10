@@ -3,6 +3,7 @@ mod processor;
 mod recipe;
 mod resource;
 mod stock;
+mod world;
 
 use log::info;
 use resource::Resource;
@@ -12,8 +13,19 @@ use std::{thread, time::Duration};
 fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
+
+    // Create world
+    let mut world: world::World = Default::default();
     // Create resources
-    let resources = Resource::read_resources_from_file("data/resource.yml".to_string());
+    world.add_resource(Resource {
+        name: "Wood".to_string(),
+    });
+    world.add_resource(Resource {
+        name: "Clay".to_string(),
+    });
+    world.add_resource(Resource {
+        name: "Coal".to_string(),
+    });
 
     // Create stock
     let mut my_resources = Vec::new();
@@ -39,6 +51,7 @@ fn main() {
         name: "Coal Pile".to_string(),
         production_speed: 0.1,
         recipe: my_recipe,
+        productive: true,
     };
     // Sim loop
     let periode = Duration::from_millis(1000);
