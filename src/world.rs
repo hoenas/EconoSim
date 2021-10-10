@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Default)]
 pub struct World {
     players: Vec<Player>,
-    resources: Vec<Resource>
+    resources: Vec<Resource>,
 }
 
 impl World {

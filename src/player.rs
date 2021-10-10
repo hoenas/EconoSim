@@ -7,4 +7,5 @@ pub type PlayerHandle = usize;
 pub struct Player {
     pub name: String,
     pub stock: Stock,
+    pub currency: f64,
 }

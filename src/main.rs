@@ -1,3 +1,4 @@
+mod market;
 mod player;
 mod processor;
 mod recipe;
@@ -6,10 +7,10 @@ mod stock;
 mod world;
 
 use log::info;
-use world::World;
 use resource::Resource;
 use simple_logger::SimpleLogger;
 use std::{thread, time::Duration};
+use world::World;
 
 fn main() {
     SimpleLogger::new().env().init().unwrap();
