@@ -9,5 +9,6 @@ resources:
   - name: Wood
   - name: Clay
   - name: Coal
+recipes: []
 market_place:
   offers: []

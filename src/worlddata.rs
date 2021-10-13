@@ -1,16 +1,16 @@
 use crate::market::marketplace::Marketplace;
 use crate::player::{Player, PlayerHandle};
-use crate::resource::{Resource, ResourceHandle};
 use crate::recipe::{Recipe, RecipeHandle};
+use crate::resource::{Resource, ResourceHandle};
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct WorldData {
-    players: Vec<Player>,
-    resources: Vec<Resource>,
-    recipes: Vec<Recipe>,
-    market_place: Marketplace,
+    pub players: Vec<Player>,
+    pub resources: Vec<Resource>,
+    pub recipes: Vec<Recipe>,
+    pub market_place: Marketplace,
 }
 
 impl WorldData {
@@ -50,12 +50,6 @@ impl WorldData {
             Some(&self.recipes[recipe_handle])
         } else {
             None
-        }
-    }
-
-    pub fn tick(&mut self) {
-        for player in self.players.iter_mut() {
-            player.tick();
         }
     }
 }
