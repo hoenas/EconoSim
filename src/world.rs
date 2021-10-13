@@ -1,3 +1,4 @@
+use crate::market::marketplace::Marketplace;
 use crate::player::{Player, PlayerHandle};
 use crate::resource::{Resource, ResourceHandle};
 
@@ -7,11 +8,12 @@ use serde::{Deserialize, Serialize};
 pub struct World {
     players: Vec<Player>,
     resources: Vec<Resource>,
+    market_place: Marketplace,
 }
 
 impl World {
-    pub fn add_player(&mut self, player: Player) -> PlayerHandle {
-        self.players.push(player);
+    pub fn add_player(&mut self, player: Box<Player>) -> PlayerHandle {
+        self.players.push(*player);
         self.players.len() - 1
     }
 
@@ -23,8 +25,8 @@ impl World {
         }
     }
 
-    pub fn add_resource(&mut self, resource: Resource) -> ResourceHandle {
-        self.resources.push(resource);
+    pub fn add_resource(&mut self, resource: Box<Resource>) -> ResourceHandle {
+        self.resources.push(*resource);
         self.resources.len() - 1
     }
 
@@ -33,6 +35,12 @@ impl World {
             Some(&self.resources[resource_handle])
         } else {
             None
+        }
+    }
+
+    pub fn tick(&mut self) {
+        for player in self.players.iter_mut() {
+            player.tick();
         }
     }
 }

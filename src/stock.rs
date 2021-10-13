@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::resource::ResourceHandle;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 
 pub struct Stock {
     pub resources: Vec<f64>,

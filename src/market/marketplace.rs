@@ -1,17 +1,16 @@
 use crate::market::offer::Offer;
-use crate::player::{Player, PlayerHandle};
-use crate::world::World;
+use crate::player::Player;
 
-use super::offer;
+use serde::{Deserialize, Serialize};
 
 pub type OfferHandle = usize;
 
+#[derive(Serialize, Deserialize, Default)]
 pub struct Marketplace {
     pub offers: Vec<Offer>,
 }
 
 impl Marketplace {
-
     pub fn place_offer(&mut self, offer: Offer) -> OfferHandle {
         self.offers.push(offer);
         self.offers.len() - 1

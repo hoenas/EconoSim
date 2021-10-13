@@ -1,0 +1,13 @@
+---
+players:
+  - name: Player1
+    stock:
+      resources: []
+    currency: 0.0
+    processors: []
+resources:
+  - name: Wood
+  - name: Clay
+  - name: Coal
+market_place:
+  offers: []
