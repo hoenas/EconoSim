@@ -4,7 +4,7 @@ mod processor;
 mod recipe;
 mod resource;
 mod stock;
-mod world;
+mod worlddata;
 
 use log::info;
 use player::Player;
@@ -12,14 +12,14 @@ use resource::Resource;
 use simple_logger::SimpleLogger;
 use std::fs::File;
 use std::{thread, time::Duration};
-use world::World;
+use worlddata::WorldData;
 
 fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
 
     // Create world
-    let mut world: World = Default::default();
+    let mut world: WorldData = Default::default();
     // Create resources
     world.add_resource(Box::new(Resource {
         name: "Wood".to_string(),
@@ -36,6 +36,8 @@ fn main() {
         name: "Player1".to_string(),
         ..Default::default()
     }));
+
+    // Create processor
 
     let outfile = File::create("data/world.yml").unwrap();
     serde_yaml::to_writer(outfile, &world).unwrap();

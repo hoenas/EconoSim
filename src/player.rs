@@ -1,6 +1,5 @@
 use crate::processor::Processor;
 use crate::stock::Stock;
-use crate::world::World;
 use serde::{Deserialize, Serialize};
 
 pub type PlayerHandle = usize;
@@ -14,6 +13,11 @@ pub struct Player {
 }
 
 impl Player {
+
+    pub fn add_processor(&mut self, processor: Box<Processor>) {
+        self.processors.push(*processor);
+    }
+
     pub fn tick(&mut self) {
         for processor in self.processors.iter() {
             processor.tick(&mut self.stock);
