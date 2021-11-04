@@ -25,24 +25,21 @@ fn main() {
     // Create world
     let mut world_data: WorldData = Default::default();
     // Create resources
-    world_data.add_resource(Box::new(Resource {
+    world_data.add_resource(Resource {
         name: "Wood".to_string(),
-    }));
-    world_data.add_resource(Box::new(Resource {
+    });
+    world_data.add_resource(Resource {
         name: "Clay".to_string(),
-    }));
-    world_data.add_resource(Box::new(Resource {
+    });
+    world_data.add_resource(Resource {
         name: "Coal".to_string(),
-    }));
+    });
 
     // Create player
-    world_data.add_player(Box::new(Player {
-        name: "Player1".to_string(),
-        ..Default::default()
-    }));
+    world_data.add_player(Player::new("Player1"));
 
     // Create recipe
-    let mut recipe = Recipe {
+    let recipe = Recipe {
         name: "Coal".to_string(),
         ingredients: [(0, 0.5), (1, 0.7)].to_vec(),
         products: [(2, 0.2)].to_vec(),
@@ -50,14 +47,16 @@ fn main() {
     };
 
     // Create processor
-    let mut processor = Box::new(Processor {
+    let processor = Processor {
         name: "Coal Pile".to_string(),
         recipe: recipe,
         production_speed: 1.2,
         productive: true,
-    });
-    let mut player = world_data.get_player_by_handle(0).unwrap();
+    };
+    let player = world_data.get_player_by_handle(0).unwrap();
     player.add_processor(processor);
+    player.stock.add_to_stock(0, 1000.0);
+    player.stock.add_to_stock(1, 1000.0);
     let outfile = File::create("data/world.yml").unwrap();
     serde_yaml::to_writer(outfile, &world_data).unwrap();
 
@@ -65,7 +64,7 @@ fn main() {
     let mut world = World { data: world_data };
 
     // Sim loop
-    let periode = Duration::from_millis(1000);
+    let periode = Duration::from_millis(1);
     loop {
         info!("==========================================");
         world.tick();

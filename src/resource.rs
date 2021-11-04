@@ -12,7 +12,7 @@ pub struct Resource {
 }
 
 impl Resource {
-    pub fn read_resources_from_file(path: String) -> Result<Vec<Resource>, Box<Error>> {
+    pub fn read_resources_from_file(path: String) -> Result<Vec<Resource>, Box<dyn Error>> {
         // Open the file in read-only mode with buffer.
         let file = File::open(path)?;
         let reader = BufReader::new(file);
