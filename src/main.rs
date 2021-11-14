@@ -22,21 +22,23 @@ fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
 
+
     // Create world
-    let mut world_data: WorldData = Default::default();
+    let mut world = World::new();
     // Create resources
-    world_data.add_resource(Resource {
+    world.data.add_resource(Resource {
         name: "Wood".to_string(),
     });
-    world_data.add_resource(Resource {
+    world.data.add_resource(Resource {
         name: "Clay".to_string(),
     });
-    world_data.add_resource(Resource {
+    world.data.add_resource(Resource {
         name: "Coal".to_string(),
     });
 
+    
     // Create player
-    world_data.add_player(Player::new("Player1"));
+    world.add_player(Player::new("Player1"));
 
     // Create recipe
     let recipe = Recipe {
@@ -53,18 +55,15 @@ fn main() {
         production_speed: 1.2,
         productive: true,
     };
-    let player = world_data.get_player_by_handle(0).unwrap();
+    let player = world.get_player_by_handle(0).unwrap();
     player.add_processor(processor);
     player.stock.add_to_stock(0, 1000.0);
     player.stock.add_to_stock(1, 1000.0);
     let outfile = File::create("data/world.yml").unwrap();
-    serde_yaml::to_writer(outfile, &world_data).unwrap();
-
-    // Create world
-    let mut world = World { data: world_data };
+    serde_yaml::to_writer(outfile, &world.data).unwrap();
 
     // Sim loop
-    let periode = Duration::from_millis(1);
+    let periode = Duration::from_millis(500);
     loop {
         info!("==========================================");
         world.tick();

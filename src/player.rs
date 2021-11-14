@@ -29,11 +29,11 @@ impl Player {
         self.processors.push(processor);
     }
 
-    pub fn tick(&mut self) {
+    pub fn tick(&mut self, world: &mut WorldData) {
         info!("Player: {}", self.name);
         for processor in self.processors.iter() {
-            processor.tick(&mut self.stock);
+            processor.tick(&mut self.stock, world);
         }
-        self.stock.print_stock()
+        self.stock.print_stock(world);
     }
 }

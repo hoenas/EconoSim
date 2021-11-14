@@ -11,6 +11,13 @@ pub struct Marketplace {
 }
 
 impl Marketplace {
+
+    pub fn new() -> Marketplace {
+        Marketplace{
+            offers: Vec::new()
+        }
+    }
+
     pub fn place_offer(&mut self, offer: Offer) -> OfferHandle {
         self.offers.push(offer);
         self.offers.len() - 1

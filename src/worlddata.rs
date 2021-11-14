@@ -1,29 +1,23 @@
 use crate::market::marketplace::Marketplace;
-use crate::player::{Player, PlayerHandle};
 use crate::recipe::{Recipe, RecipeHandle};
 use crate::resource::{Resource, ResourceHandle};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize)]
 pub struct WorldData {
-    pub players: Vec<Player>,
     pub resources: Vec<Resource>,
     pub recipes: Vec<Recipe>,
     pub market_place: Marketplace,
 }
 
 impl WorldData {
-    pub fn add_player(&mut self, player: Player) -> PlayerHandle {
-        self.players.push(player);
-        self.players.len() - 1
-    }
 
-    pub fn get_player_by_handle(&mut self, player_handle: PlayerHandle) -> Option<&mut Player> {
-        if player_handle < self.players.len() {
-            Some(&mut self.players[player_handle])
-        } else {
-            None
+    pub fn new() -> WorldData {
+        WorldData{
+            resources: Vec::new(),
+            recipes: Vec::new(),
+            market_place: Marketplace::new()
         }
     }
 

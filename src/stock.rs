@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use log::info;
 use serde::{Deserialize, Serialize};
 
-use crate::resource::ResourceHandle;
+use crate::{resource::ResourceHandle, worlddata::WorldData};
 
 #[derive(Serialize, Deserialize)]
 
@@ -74,9 +74,10 @@ impl Stock {
         self.resources.insert(resource, new_value);
     }
 
-    pub fn print_stock(&self) {
-        for (resource, amount) in self.resources.values().enumerate() {
-            info!("Resource {}: {}", resource, amount);
+    pub fn print_stock(&self, world: &mut WorldData) {
+        for (resource_handle, amount) in self.resources.values().enumerate() {
+            let resource = world.get_resource_by_handle(resource_handle).unwrap();
+            info!("Resource {}: {}", resource.name, amount);
         }
     }
 }
