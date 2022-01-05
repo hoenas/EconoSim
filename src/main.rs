@@ -26,13 +26,13 @@ fn main() {
     // Create world
     let mut world = World::new();
     // Create resources
-    world.data.add_resource(Resource {
+    let wood = world.data.add_resource(Resource {
         name: "Wood".to_string(),
     });
-    world.data.add_resource(Resource {
+    let clay = world.data.add_resource(Resource {
         name: "Clay".to_string(),
     });
-    world.data.add_resource(Resource {
+    let coal = world.data.add_resource(Resource {
         name: "Coal".to_string(),
     });
 
@@ -43,22 +43,22 @@ fn main() {
     // Create recipe
     let recipe = Recipe {
         name: "Coal".to_string(),
-        ingredients: [(0, 0.5), (1, 0.7)].to_vec(),
-        products: [(2, 0.2)].to_vec(),
+        ingredients: [(wood, 0.5), (clay, 0.7)].to_vec(),
+        products: [(coal, 0.2)].to_vec(),
         production_speed: 0.5,
     };
-
+    let recipe_handle = world.data.add_recipe(recipe);
     // Create processor
     let processor = Processor {
         name: "Coal Pile".to_string(),
-        recipe: recipe,
+        recipe: recipe_handle,
         production_speed: 1.2,
         productive: true,
     };
     let player = world.get_player_by_handle(0).unwrap();
     player.add_processor(processor);
-    player.stock.add_to_stock(0, 1000.0);
-    player.stock.add_to_stock(1, 1000.0);
+    player.stock.add_to_stock(wood, 1000.0);
+    player.stock.add_to_stock(clay, 1000.0);
     let outfile = File::create("data/world.yml").unwrap();
     serde_yaml::to_writer(outfile, &world.data).unwrap();
 

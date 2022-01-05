@@ -75,7 +75,7 @@ impl Stock {
     }
 
     pub fn print_stock(&self, world: &mut WorldData) {
-        for (resource_handle, amount) in self.resources.values().enumerate() {
+        for (&resource_handle, amount) in self.resources.iter() {
             let resource = world.get_resource_by_handle(resource_handle).unwrap();
             info!("Resource {}: {}", resource.name, amount);
         }
