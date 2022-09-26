@@ -35,4 +35,12 @@ impl World {
             None
         }
     }
+
+    pub fn get_player_name_by_handle(&self, player_handle: PlayerHandle) -> Option<&str> {
+        if player_handle < self.players.len() {
+            Some(&self.players[player_handle].name)
+        } else {
+            None
+        }
+    }
 }

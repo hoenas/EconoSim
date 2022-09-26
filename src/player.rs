@@ -1,4 +1,4 @@
-use log::info;
+use log::debug;
 
 use crate::processor::Processor;
 use crate::stock::Stock;
@@ -30,10 +30,9 @@ impl Player {
     }
 
     pub fn tick(&mut self, world: &mut WorldData) {
-        info!("Player: {}", self.name);
+        debug!("Player: {} tick", self.name);
         for processor in self.processors.iter() {
             processor.tick(&mut self.stock, world);
         }
-        self.stock.print_stock(world);
     }
 }

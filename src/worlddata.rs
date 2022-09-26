@@ -36,6 +36,14 @@ impl WorldData {
         }
     }
 
+    pub fn get_resource_name_by_handle(&self, resource_handle: ResourceHandle) -> Option<&str> {
+        if resource_handle < self.resources.len() {
+            Some(&self.resources[resource_handle].name)
+        } else {
+            None
+        }
+    }
+
     pub fn add_recipe(&mut self, recipe: Recipe) -> RecipeHandle {
         self.recipes.push(recipe);
         self.recipes.len() - 1
