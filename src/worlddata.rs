@@ -12,12 +12,11 @@ pub struct WorldData {
 }
 
 impl WorldData {
-
     pub fn new() -> WorldData {
-        WorldData{
+        WorldData {
             resources: Vec::new(),
             recipes: Vec::new(),
-            market_place: Marketplace::new()
+            market_place: Marketplace::new(),
         }
     }
 

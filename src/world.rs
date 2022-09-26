@@ -1,15 +1,20 @@
-use crate::worlddata::WorldData;
-use crate::player::{Player, PlayerHandle};
+use serde::{Deserialize, Serialize};
 
+use crate::player::{Player, PlayerHandle};
+use crate::worlddata::WorldData;
+
+#[derive(Serialize, Deserialize)]
 pub struct World {
     pub players: Vec<Player>,
     pub data: WorldData,
 }
 
 impl World {
-
     pub fn new() -> World {
-        World { players: Vec::new(), data: WorldData::new() }
+        World {
+            players: Vec::new(),
+            data: WorldData::new(),
+        }
     }
 
     pub fn tick(&mut self) {
