@@ -1,18 +1,58 @@
 ---
-resources:
-  - name: Wood
-  - name: Clay
-  - name: Coal
-recipes:
-  - name: Coal
-    ingredients:
-      - - 0
-        - 0.5
-      - - 1
-        - 0.7
-    products:
-      - - 2
-        - 0.2
-    production_speed: 0.5
-market_place:
-  offers: []
+players:
+  - name: Hubert
+    stock:
+      resources:
+        0: 1000.0
+        1: 1000.0
+        2: 1000.0
+    currency: 0.0
+    processors:
+      - name: Coal Pile
+        production_speed: 1.2
+        recipe: 0
+        productive: true
+      - name: Coal Pile
+        production_speed: 1.2
+        recipe: 0
+        productive: true
+  - name: Holger
+    stock:
+      resources:
+        1: 1000.0
+        0: 1000.0
+    currency: 0.0
+    processors:
+      - name: Coal Pile
+        production_speed: 1.2
+        recipe: 0
+        productive: true
+  - name: Herbert
+    stock:
+      resources:
+        0: 1000.0
+        1: 1000.0
+    currency: 0.0
+    processors:
+      - name: Coal Pile
+        production_speed: 1.2
+        recipe: 0
+        productive: true
+data:
+  resources:
+    - name: Wood
+    - name: Clay
+    - name: Coal
+  recipes:
+    - name: Coal
+      ingredients:
+        - - 0
+          - 0.5
+        - - 1
+          - 0.7
+      products:
+        - - 2
+          - 0.2
+      production_speed: 0.5
+  market_place:
+    offers: []

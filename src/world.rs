@@ -1,6 +1,9 @@
+use serde::{Deserialize, Serialize};
+
 use crate::player::{Player, PlayerHandle};
 use crate::worlddata::WorldData;
 
+#[derive(Serialize, Deserialize)]
 pub struct World {
     pub players: Vec<Player>,
     pub data: WorldData,
