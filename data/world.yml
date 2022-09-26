@@ -55,4 +55,8 @@ data:
           - 0.2
       production_speed: 0.5
   market_place:
-    offers: []
+    offers:
+      - resource: 2
+        amount: 25.0
+        price_per_unit: 10
+        player: 0
