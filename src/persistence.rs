@@ -10,8 +10,8 @@ impl Persistence {
         return serde_yaml::from_reader(infile).unwrap();
     }
 
-    pub fn write_world(world: World) {
+    pub fn write_world(world: &World) {
         let outfile = File::create(FILENAME).unwrap();
-        return serde_yaml::from_reader(outfile).unwrap();
+        return serde_yaml::to_writer(outfile, world).unwrap();
     }
 }
