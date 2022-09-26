@@ -22,7 +22,6 @@ fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
 
-
     // Create world
     let mut world = World::new();
     // Create resources
@@ -36,7 +35,6 @@ fn main() {
         name: "Coal".to_string(),
     });
 
-    
     // Create player
     world.add_player(Player::new("Player1"));
 
