@@ -1,4 +1,5 @@
 mod market;
+mod persistence;
 mod player;
 mod processor;
 mod recipe;
@@ -8,18 +9,16 @@ mod world;
 mod worlddata;
 
 use log::info;
+use persistence::Persistence;
 use simple_logger::SimpleLogger;
-use std::fs::File;
 use std::{thread, time::Duration};
-use world::World;
 
 fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
 
-    // Read world
-    let infile = File::open("data/world.yml").unwrap();
-    let mut world: World = serde_yaml::from_reader(infile).unwrap();
+    // Load world
+    let mut world = Persistence::load_world();
 
     // Sim loop
     let periode = Duration::from_millis(500);
