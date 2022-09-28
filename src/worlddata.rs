@@ -22,7 +22,9 @@ impl WorldData {
 
     pub fn add_resource(&mut self, resource: Resource) -> ResourceHandle {
         self.resources.push(resource);
-        self.resources.len() - 1
+        let resource_count: ResourceHandle = self.resources.len() - 1;
+        self.market_place.resource_count = resource_count;
+        return resource_count;
     }
 
     pub fn get_resource_by_handle(

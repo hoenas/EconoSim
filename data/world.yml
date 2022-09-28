@@ -55,6 +55,11 @@ data:
           - 0.2
       production_speed: 0.5
   market_place:
+    resource_count: 3
+    price_index:
+      0: null
+      1: null
+      2: 10
     offers:
       - resource: 2
         amount: 25.0

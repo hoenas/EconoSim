@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::player::Player;
 use crate::{market::offer::Offer, resource::ResourceHandle};
 
@@ -8,16 +10,35 @@ pub type OfferHandle = usize;
 #[derive(Serialize, Deserialize, Default)]
 pub struct Marketplace {
     pub offers: Vec<Offer>,
+    pub price_index: HashMap<ResourceHandle, Option<f64>>,
+    pub resource_count: ResourceHandle,
 }
 
 impl Marketplace {
     pub fn new() -> Marketplace {
-        Marketplace { offers: Vec::new() }
+        Marketplace {
+            offers: Vec::new(),
+            price_index: HashMap::new(),
+            resource_count: 0,
+        }
+    }
+
+    pub fn update_price_index(&mut self) {
+        for handle in 0..self.resource_count {
+            let offer = self.get_cheapest_offer(handle);
+            if offer.is_none() {
+                self.price_index.insert(handle, None);
+            } else {
+                self.price_index
+                    .insert(handle, Some(offer.unwrap().price_per_unit));
+            }
+        }
     }
 
     pub fn get_cheapest_offer(&self, resource: ResourceHandle) -> Option<&Offer> {
         let mut cheapest_offer: Option<&Offer> = None;
-        for offer in self.offers.iter() {
+        for offer_handle in 0..self.offers.len() - 1 {
+            let offer = self.get_offer_by_handle(offer_handle).unwrap();
             if offer.resource == resource {
                 if cheapest_offer.is_none() {
                     cheapest_offer = Some(offer);
