@@ -13,6 +13,4 @@ graph TD;
     Processor -- produces --> Resource
     Resource -- is consumed by --> Processor
     Offer -- includes --> Resource
-    Consumer -- accepts offer --> Marketplace
-    Event -- manipulates --> Consumer
 ~~~
