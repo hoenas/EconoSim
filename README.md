@@ -8,9 +8,8 @@ graph TD;
     Marketplace-- holds -->Offer
     Player -- places offer -->Marketplace
     Player -- accepts offer -->Marketplace
-    Player -- owns -->Factory
+    Player -- owns -->Processor
     Player -- owns --> Resource
-    Factory -- includes --> Processor
     Processor -- produces --> Resource
     Resource -- is consumed by --> Processor
     Offer -- includes --> Resource

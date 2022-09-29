@@ -52,6 +52,7 @@ impl Marketplace {
 
     pub fn place_offer(&mut self, offer: Offer) -> OfferHandle {
         self.offers.push(offer);
+        self.update_price_index();
         self.offers.len() - 1
     }
 
@@ -70,6 +71,7 @@ impl Marketplace {
                 player.currency -= price;
                 player.stock.add_to_stock(offer.resource, amount);
             }
+            self.update_price_index();
         }
     }
 }
