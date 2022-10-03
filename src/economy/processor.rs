@@ -1,5 +1,5 @@
-use crate::recipe::RecipeHandle;
-use crate::stock::Stock;
+use crate::economy::recipe::RecipeHandle;
+use crate::economy::stock::Stock;
 use crate::worlddata::WorldData;
 use serde::{Deserialize, Serialize};
 

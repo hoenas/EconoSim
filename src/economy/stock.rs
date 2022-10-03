@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use log::info;
 use serde::{Deserialize, Serialize};
 
-use crate::{resource::ResourceHandle, worlddata::WorldData};
+use crate::economy::resource::ResourceHandle;
+use crate::worlddata::WorldData;
 
 #[derive(Serialize, Deserialize)]
 

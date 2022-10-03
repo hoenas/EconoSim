@@ -1,5 +1,5 @@
+use crate::economy::resource::ResourceHandle;
 use crate::player::PlayerHandle;
-use crate::resource::ResourceHandle;
 
 use serde::{Deserialize, Serialize};
 

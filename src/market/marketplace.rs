@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
+use crate::economy::resource::ResourceHandle;
+use crate::market::offer::Offer;
 use crate::player::Player;
-use crate::{market::offer::Offer, resource::ResourceHandle};
 
 use serde::{Deserialize, Serialize};
 

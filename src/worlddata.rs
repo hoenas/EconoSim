@@ -1,6 +1,6 @@
+use crate::economy::recipe::{Recipe, RecipeHandle};
+use crate::economy::resource::{Resource, ResourceHandle};
 use crate::market::marketplace::Marketplace;
-use crate::recipe::{Recipe, RecipeHandle};
-use crate::resource::{Resource, ResourceHandle};
 
 use serde::{Deserialize, Serialize};
 

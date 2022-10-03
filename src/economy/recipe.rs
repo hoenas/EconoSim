@@ -1,4 +1,4 @@
-use crate::resource::ResourceHandle;
+use crate::economy::resource::ResourceHandle;
 use serde::{Deserialize, Serialize};
 
 pub type RecipeHandle = usize;

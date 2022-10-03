@@ -1,11 +1,8 @@
+mod economy;
 mod info;
 mod market;
 mod persistence;
 mod player;
-mod processor;
-mod recipe;
-mod resource;
-mod stock;
 mod world;
 mod worlddata;
 

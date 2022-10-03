@@ -1,7 +1,7 @@
 use log::debug;
 
-use crate::processor::Processor;
-use crate::stock::Stock;
+use crate::economy::processor::Processor;
+use crate::economy::stock::Stock;
 use crate::worlddata::WorldData;
 use serde::{Deserialize, Serialize};
 
