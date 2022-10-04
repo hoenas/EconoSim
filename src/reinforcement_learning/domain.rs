@@ -22,56 +22,51 @@ const REWARD_GOAL: f64 = 0.0;
 const MIN_ACTION: f64 = -1.0;
 const MAX_ACTION: f64 = 1.0;
 
-pub struct ContinuousMountainCar {
+pub struct EconomyPlayer {
     x: f64,
     v: f64,
 
     action_space: Interval,
 }
 
-impl ContinuousMountainCar {
-    pub fn new(x: f64, v: f64) -> ContinuousMountainCar {
-        ContinuousMountainCar {
-            x,
-            v,
-            action_space: Interval::bounded(MIN_ACTION, MAX_ACTION),
+impl EconomyPlayer {
+    pub fn new(x: f64, v: f64) -> EconomyPlayer {
+        EconomyPlayer {
+            // TODO: Define state data
         }
     }
 
-    fn dv(x: f64, a: f64) -> f64 {
-        FORCE_CAR * a + FORCE_G * (HILL_FREQ * x).cos()
-    }
-
     fn update_state(&mut self, a: f64) {
-        let a = self.action_space.map_onto(a);
-
-        self.v = clip!(V_MIN, self.v + Self::dv(self.x, a), V_MAX);
-        self.x = clip!(X_MIN, self.x + self.v, X_MAX);
+        // TODO: Update state
     }
 }
 
-impl Default for ContinuousMountainCar {
-    fn default() -> ContinuousMountainCar {
-        ContinuousMountainCar::new(-0.5, 0.0)
+impl Default for EconomyPlayer {
+    fn default() -> EconomyPlayer {
+        EconomyPlayer::new()
     }
 }
 
-impl Domain for ContinuousMountainCar {
+impl Domain for EconomyPlayer {
     type StateSpace = ProductSpace<Interval>;
     type ActionSpace = Interval;
 
     fn emit(&self) -> Observation<Vec<f64>> {
-        if self.x >= X_MAX {
-            Observation::Terminal(vec![self.x, self.v])
-        } else {
-            Observation::Full(vec![self.x, self.v])
-        }
+        // TODO: Emit the state vector
+        // For MountainCar example:
+        // if self.x >= X_MAX {
+        //     Observation::Terminal(vec![self.x, self.v])
+        // } else {
+        //     Observation::Full(vec![self.x, self.v])
+        // }
     }
 
     fn step(&mut self, action: &f64) -> (Observation<Vec<f64>>, Reward) {
+        // TODO: define actionspace
         self.update_state(*action);
 
         let to = self.emit();
+        // TODO: Calculate reward
         let reward = if to.is_terminal() {
             REWARD_GOAL
         } else {
@@ -82,10 +77,12 @@ impl Domain for ContinuousMountainCar {
     }
 
     fn state_space(&self) -> Self::StateSpace {
+        // TODO: Define state space
         ProductSpace::empty() + Interval::bounded(X_MIN, X_MAX) + Interval::bounded(V_MIN, V_MAX)
     }
 
     fn action_space(&self) -> Interval {
+        // TODO: Define action space
         Interval::bounded(MIN_ACTION, MAX_ACTION)
     }
 }
