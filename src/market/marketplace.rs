@@ -1,10 +1,8 @@
-use std::collections::HashMap;
-
 use crate::economy::resource::ResourceHandle;
 use crate::market::offer::Offer;
-use crate::player::Player;
-
+use crate::player::{Player, PlayerHandle};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 pub type OfferHandle = usize;
 
@@ -13,6 +11,7 @@ pub struct Marketplace {
     pub offers: HashMap<OfferHandle, Offer>,
     pub price_index: HashMap<ResourceHandle, Option<(OfferHandle, f64)>>,
     pub resource_count: ResourceHandle,
+    paybacks: Vec<(PlayerHandle, f64)>,
     offer_id: OfferHandle,
 }
 
@@ -22,6 +21,7 @@ impl Marketplace {
             offers: HashMap::new(),
             price_index: HashMap::new(),
             resource_count: 0,
+            paybacks: Vec::new(),
             offer_id: 0,
         }
     }
@@ -71,6 +71,17 @@ impl Marketplace {
                     self.update_price_index();
                 }
             }
+        }
+    }
+
+    pub fn perform_paybacks(&mut self, players: &mut Vec<Player>) {
+        let mut payback = self.paybacks.pop();
+        while payback.is_some() {
+            let player_handle = payback.unwrap().0;
+            let currency = payback.unwrap().1;
+            let player = &mut players[player_handle];
+            player.currency += currency;
+            payback = self.paybacks.pop();
         }
     }
 }

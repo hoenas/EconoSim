@@ -21,6 +21,7 @@ impl World {
         for player in self.players.iter_mut() {
             player.tick(&mut self.data);
         }
+        self.data.market_place.perform_paybacks(&mut self.players);
     }
 
     pub fn add_player(&mut self, player: Player) -> PlayerHandle {
