@@ -56,12 +56,15 @@ data:
       production_speed: 0.5
   market_place:
     resource_count: 3
+    next_offer_id: 1
+    paybacks: []
     price_index:
       0: null
       1: null
-      2: 10
+      2: [0, 10]
     offers:
-      - resource: 2
+      0:
+        resource: 2
         amount: 25.0
         price_per_unit: 10
         player: 0

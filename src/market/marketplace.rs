@@ -12,7 +12,7 @@ pub struct Marketplace {
     pub price_index: HashMap<ResourceHandle, Option<(OfferHandle, f64)>>,
     pub resource_count: ResourceHandle,
     paybacks: Vec<(PlayerHandle, f64)>,
-    offer_id: OfferHandle,
+    next_offer_id: OfferHandle,
 }
 
 impl Marketplace {
@@ -22,7 +22,7 @@ impl Marketplace {
             price_index: HashMap::new(),
             resource_count: 0,
             paybacks: Vec::new(),
-            offer_id: 0,
+            next_offer_id: 0,
         }
     }
 
@@ -49,10 +49,10 @@ impl Marketplace {
     }
 
     pub fn place_offer(&mut self, offer: Offer) -> OfferHandle {
-        self.offer_id += 1;
-        self.offers.insert(self.offer_id, offer);
+        self.next_offer_id += 1;
+        self.offers.insert(self.next_offer_id, offer);
         self.update_price_index();
-        self.offer_id
+        self.next_offer_id
     }
 
     pub fn get_offer_by_handle(&self, offer_handle: OfferHandle) -> Option<&Offer> {
