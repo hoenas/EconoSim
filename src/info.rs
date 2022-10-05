@@ -10,8 +10,10 @@ impl Info {
         info!("WORLD STATUS ===================================================================");
         info!("Player Status:");
         for player in world.players.iter() {
-            info!(" - Player: {}", player.name);
+            info!("Player: {}", player.name);
+            info!("Currency: {}", player.currency);
             player.stock.print_stock(&mut world.data);
+            info!("");
         }
         info!("================================================================================");
         info!("Market offers:");
