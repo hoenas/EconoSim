@@ -19,7 +19,7 @@ impl Stock {
         }
     }
 
-    fn get_resource_value(&mut self, resource: ResourceHandle) -> f64 {
+    fn get_resource_amount_in_stock(&mut self, resource: ResourceHandle) -> f64 {
         match self.resources.get(&resource) {
             Some(value) => *value,
             None => {
@@ -30,7 +30,7 @@ impl Stock {
     }
 
     fn calculate_new_stock_value(&mut self, resource: ResourceHandle, amount: f64) -> f64 {
-        let resource_in_stock = self.get_resource_value(resource);
+        let resource_in_stock = self.get_resource_amount_in_stock(resource);
         resource_in_stock - amount
     }
 
@@ -71,7 +71,7 @@ impl Stock {
     }
 
     pub fn add_to_stock(&mut self, resource: ResourceHandle, amount: f64) {
-        let new_value = self.get_resource_value(resource) + amount;
+        let new_value = self.get_resource_amount_in_stock(resource) + amount;
         self.resources.insert(resource, new_value);
     }
 
