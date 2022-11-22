@@ -39,6 +39,7 @@ players:
         recipe: 1
         productive: true
 data:
+  processor_price: 1000.0
   resources:
     - name: Wood
     - name: Clay

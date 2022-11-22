@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct WorldData {
+    pub processor_price: f64,
     pub resources: Vec<Resource>,
     pub recipes: Vec<Recipe>,
     pub market_place: Marketplace,
@@ -14,6 +15,7 @@ pub struct WorldData {
 impl WorldData {
     pub fn new() -> WorldData {
         WorldData {
+            processor_price: 1000.0,
             resources: Vec::new(),
             recipes: Vec::new(),
             market_place: Marketplace::new(),
