@@ -77,9 +77,10 @@ company_data:
       orders: []
       offers: []
 market_place:
-  resource_count: 3
   next_offer_id: 1
   next_order_id: 0
+market_data:
+  resource_count: 3
   price_index:
     0: null
     1: null
@@ -87,11 +88,16 @@ market_place:
   order_index:
     0: null
     1: null
-    2: null
+    2: [0, 15]
   offers:
     0:
       resource: 2
       amount: 25.0
       price_per_unit: 10
       company: 0
-  orders: {}
+  orders:
+    0:
+      resource: 2
+      amount: 100.0
+      max_price_per_unit: 12
+      company: 1

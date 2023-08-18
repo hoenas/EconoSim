@@ -2,6 +2,7 @@ use crate::market::marketplace::Marketplace;
 use crate::market::offer::Offer;
 use crate::market::order::Order;
 use crate::world_data::company_data::CompanyData;
+use crate::world_data::market_data::MarketData;
 use crate::world_data::processor_data::ProcessorData;
 use crate::world_data::recipe_data::RecipeData;
 use crate::world_data::resource_data::ResourceData;
@@ -14,6 +15,7 @@ pub struct World {
     pub processor_data: ProcessorData,
     pub recipe_data: RecipeData,
     pub resource_data: ResourceData,
+    pub market_data: MarketData,
     pub market_place: Marketplace,
 }
 
@@ -24,6 +26,7 @@ impl World {
             processor_data: ProcessorData::new(),
             recipe_data: RecipeData::new(),
             resource_data: ResourceData::new(),
+            market_data: MarketData::new(),
             market_place: Marketplace::new(),
         }
     }
@@ -37,7 +40,7 @@ impl World {
         }
         info!("================================================================================");
         info!("Market offers:");
-        for offer in self.market_place.offers.iter() {
+        for offer in self.market_data.offers.iter() {
             let company_name = self
                 .company_data
                 .get_company_name_by_handle(offer.1.company)
@@ -60,25 +63,32 @@ impl World {
             company.tick(&self.recipe_data);
             // Create offers
             for offer in company.offers.iter_mut() {
-                self.market_place.place_offer(Offer {
-                    resource: offer.resource,
-                    amount: offer.amount,
-                    price_per_unit: offer.price_per_unit,
-                    company: company_handle,
-                });
+                self.market_place.place_offer(
+                    Offer {
+                        resource: offer.resource,
+                        amount: offer.amount,
+                        price_per_unit: offer.price_per_unit,
+                        company: company_handle,
+                    },
+                    &mut self.market_data,
+                );
             }
             company.offers.clear();
             // Create orders
             for order in company.orders.iter_mut() {
-                self.market_place.place_order(Order {
-                    resource: order.resource,
-                    amount: order.amount,
-                    max_price_per_unit: order.max_price_per_unit,
-                    company: company_handle,
-                });
+                self.market_place.place_order(
+                    Order {
+                        resource: order.resource,
+                        amount: order.amount,
+                        max_price_per_unit: order.max_price_per_unit,
+                        company: company_handle,
+                    },
+                    &mut self.market_data,
+                );
             }
             company.orders.clear();
         }
-        self.market_place.tick(&mut self.company_data.companies);
+        self.market_place
+            .tick(&mut self.market_data, &mut self.company_data.companies);
     }
 }

@@ -1,20 +1,15 @@
 use crate::economy::company::Company;
 use crate::economy::resource::ResourceHandle;
 use crate::market::offer::Offer;
+use crate::market::offer::OfferHandle;
 use crate::market::order::Order;
+use crate::market::order::OrderHandle;
+use crate::world_data::market_data::MarketData;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub type OfferHandle = usize;
-pub type OrderHandle = usize;
-
 #[derive(Serialize, Deserialize, Default)]
 pub struct Marketplace {
-    pub offers: HashMap<OfferHandle, Offer>,
-    pub orders: HashMap<OrderHandle, Order>,
-    pub price_index: HashMap<ResourceHandle, Option<(OfferHandle, f64)>>,
-    pub order_index: HashMap<ResourceHandle, Option<(OfferHandle, f64)>>,
-    pub resource_count: ResourceHandle,
     next_offer_id: OfferHandle,
     next_order_id: OrderHandle,
 }
@@ -22,33 +17,32 @@ pub struct Marketplace {
 impl Marketplace {
     pub fn new() -> Marketplace {
         Marketplace {
-            offers: HashMap::new(),
-            orders: HashMap::new(),
-            price_index: HashMap::new(),
-            order_index: HashMap::new(),
-            resource_count: 0,
             next_offer_id: 0,
             next_order_id: 0,
         }
     }
 
-    pub fn update_price_index(&mut self) {
-        for resource_handle in 0..self.resource_count {
-            let offer = self.get_cheapest_offer(resource_handle);
-            self.price_index.insert(resource_handle, offer);
+    pub fn update_price_index(&self, market_data: &mut MarketData) {
+        for resource_handle in 0..market_data.resource_count {
+            let offer = self.get_cheapest_offer(resource_handle, &market_data.offers);
+            market_data.price_index.insert(resource_handle, offer);
         }
     }
 
-    pub fn update_order_index(&mut self) {
-        for resource_handle in 0..self.resource_count {
-            let order = self.get_highest_order(resource_handle);
-            self.order_index.insert(resource_handle, order);
+    pub fn update_order_index(&self, market_data: &mut MarketData) {
+        for resource_handle in 0..market_data.resource_count {
+            let order = self.get_highest_order(resource_handle, market_data);
+            market_data.order_index.insert(resource_handle, order);
         }
     }
 
-    pub fn get_cheapest_offer(&self, resource: ResourceHandle) -> Option<(OfferHandle, f64)> {
+    fn get_cheapest_offer(
+        &self,
+        resource: ResourceHandle,
+        offers: &HashMap<OfferHandle, Offer>,
+    ) -> Option<(OfferHandle, f64)> {
         let mut cheapest_offer: Option<(OfferHandle, f64)> = None;
-        for (offer_handle, offer) in self.offers.iter() {
+        for (offer_handle, offer) in offers.iter() {
             if offer.resource == resource {
                 if cheapest_offer.is_none() {
                     cheapest_offer = Some((*offer_handle, offer.price_per_unit));
@@ -59,10 +53,13 @@ impl Marketplace {
         }
         cheapest_offer
     }
-
-    pub fn get_highest_order(&self, resource: ResourceHandle) -> Option<(OrderHandle, f64)> {
+    pub fn get_highest_order(
+        &self,
+        resource: ResourceHandle,
+        market_data: &mut MarketData,
+    ) -> Option<(OrderHandle, f64)> {
         let mut highest_order: Option<(OrderHandle, f64)> = None;
-        for (order_handle, order) in self.orders.iter() {
+        for (order_handle, order) in market_data.orders.iter() {
             if order.resource == resource {
                 if highest_order.is_none() {
                     highest_order = Some((*order_handle, order.max_price_per_unit));
@@ -74,71 +71,88 @@ impl Marketplace {
         highest_order
     }
 
-    pub fn place_offer(&mut self, offer: Offer) -> OfferHandle {
+    pub fn place_offer(&mut self, offer: Offer, market_data: &mut MarketData) -> OfferHandle {
         self.next_offer_id += 1;
-        self.offers.insert(self.next_offer_id, offer);
-        self.update_price_index();
+        market_data.offers.insert(self.next_offer_id, offer);
+        self.update_price_index(market_data);
         self.next_offer_id
     }
 
-    pub fn place_order(&mut self, order: Order) -> OfferHandle {
+    pub fn place_order(&mut self, order: Order, market_data: &mut MarketData) -> OfferHandle {
         self.next_order_id += 1;
-        self.orders.insert(self.next_order_id, order);
-        self.update_order_index();
+        market_data.orders.insert(self.next_order_id, order);
+        self.update_order_index(market_data);
         self.next_order_id
     }
 
-    pub fn get_offer_by_handle(&self, offer_handle: OfferHandle) -> Option<&Offer> {
-        Some(&self.offers[&offer_handle])
+    pub fn get_offer_by_handle(
+        self,
+        offer_handle: OfferHandle,
+        market_data: &mut MarketData,
+    ) -> Option<&Offer> {
+        Some(&market_data.offers[&offer_handle])
     }
 
-    pub fn get_order_by_handle(&self, order_handle: OrderHandle) -> Option<&Order> {
-        Some(&self.orders[&order_handle])
+    pub fn get_order_by_handle(
+        self,
+        order_handle: OrderHandle,
+        market_data: &mut MarketData,
+    ) -> Option<&Order> {
+        Some(&market_data.orders[&order_handle])
     }
 
-    fn check_orders(&mut self, companies: &mut Vec<Company>) {
+    fn execute_orders(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
         // Check all orders
-        // for (order_handle, order) in self.orders.iter_mut() {
-        //     while order.amount > 0.0 {
-        //         match self.price_index.get(&order.resource) {
-        //             Some(value) => {
-        //                 let offer_handle = value.unwrap().0;
-        //                 let offer_price = value.unwrap().1;
-        //                 if offer_price <= order.max_price_per_unit {
-        //                     let offer_object = self.get_offer_by_handle(offer_handle).unwrap();
-        //                     if offer_object.amount < order.amount {
-        //                         // Consume offer
-        //                         order.amount -= offer_object.amount;
-        //                         // Give resources to company
-        //                         companies[order.company]
-        //                             .stock
-        //                             .add_to_stock(order.resource, offer_object.amount);
-        //                         // We consumed the hole amount of the offer and must therefore remove it from the market
-        //                         self.offers.remove(&offer_handle);
-        //                         // The prices might have changed, we need to update the index
-        //                         self.update_price_index();
-        //                     } else {
-        //                         // Give resources to company
-        //                         companies[order.company]
-        //                             .stock
-        //                             .add_to_stock(order.resource, order.amount);
-        //                         // We consumed the hole amount of the order and must therefore remove it from the market
-        //                         self.orders.remove(&order_handle);
-        //                         // The orders might have changed, we need to update the index
-        //                         self.update_order_index();
-        //                     }
-        //                 }
-        //             }
-        //             None => {
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
+        for order in market_data.orders.values_mut() {
+            while order.amount > 0.0 {
+                match self.get_cheapest_offer(order.resource, &market_data.offers) {
+                    Some(value) => {
+                        let offer_handle = value.0;
+                        let offer_price = value.1;
+                        if offer_price <= order.max_price_per_unit {
+                            let offer_object = Some(&market_data.offers[&offer_handle]).unwrap();
+                            if offer_object.amount < order.amount {
+                                // Consume offer
+                                order.amount -= offer_object.amount;
+                                // Give resources to company
+                                companies[order.company]
+                                    .stock
+                                    .add_to_stock(order.resource, offer_object.amount);
+                                // We consumed the hole amount of the offer and must therefore remove it from the market
+                                market_data.offers.remove(&offer_handle);
+                            } else {
+                                // Give resources to company
+                                companies[order.company]
+                                    .stock
+                                    .add_to_stock(order.resource, order.amount);
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    None => {
+                        break;
+                    }
+                }
+            }
+        }
     }
 
-    pub fn tick(&mut self, companies: &mut Vec<Company>) {
-        self.check_orders(companies);
-        self.update_order_index();
+    fn cleanup_orders(&self, market_data: &mut MarketData) {
+        let mut complete_orders: Vec<OrderHandle> = vec![];
+        for (order_handle, order) in market_data.orders.iter() {
+            if order.amount <= 0.0 {
+                complete_orders.push(*order_handle);
+            }
+        }
+        for order_handle in complete_orders {
+            market_data.orders.remove(&order_handle);
+        }
+    }
+
+    pub fn tick(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
+        self.execute_orders(market_data, companies);
+        self.cleanup_orders(market_data);
+        self.update_order_index(market_data);
     }
 }

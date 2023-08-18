@@ -2,6 +2,7 @@ use crate::economy::company::CompanyHandle;
 use crate::economy::resource::ResourceHandle;
 use serde::{Deserialize, Serialize};
 
+pub type OrderHandle = usize;
 #[derive(Serialize, Deserialize, Default)]
 pub struct UnprocessedOrder {
     pub resource: ResourceHandle,
