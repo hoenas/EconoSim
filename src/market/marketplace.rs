@@ -1,4 +1,4 @@
-use crate::economy::company::{Company, CompanyHandle};
+use crate::economy::company::Company;
 use crate::economy::resource::ResourceHandle;
 use crate::market::offer::Offer;
 use crate::market::order::Order;
@@ -15,7 +15,6 @@ pub struct Marketplace {
     pub price_index: HashMap<ResourceHandle, Option<(OfferHandle, f64)>>,
     pub order_index: HashMap<ResourceHandle, Option<(OfferHandle, f64)>>,
     pub resource_count: ResourceHandle,
-    paybacks: Vec<(CompanyHandle, f64)>,
     next_offer_id: OfferHandle,
     next_order_id: OrderHandle,
 }
@@ -28,7 +27,6 @@ impl Marketplace {
             price_index: HashMap::new(),
             order_index: HashMap::new(),
             resource_count: 0,
-            paybacks: Vec::new(),
             next_offer_id: 0,
             next_order_id: 0,
         }
@@ -100,29 +98,49 @@ impl Marketplace {
         Some(&self.orders[&order_handle])
     }
 
-    pub fn accept_offer(&mut self, offer: &mut Offer, player: &mut Company, amount: f64) {
-        if amount <= offer.amount {
-            let price = offer.price_per_unit * amount;
-            if price <= player.currency {
-                offer.amount -= amount;
-                player.currency -= price;
-                // Clean up offers and update price index
-                if offer.amount <= 0.0 {
-                    self.offers.retain(|_, v| v.amount <= 0.0);
-                    self.update_price_index();
-                }
-            }
-        }
+    fn check_orders(&mut self, companies: &mut Vec<Company>) {
+        // Check all orders
+        // for (order_handle, order) in self.orders.iter_mut() {
+        //     while order.amount > 0.0 {
+        //         match self.price_index.get(&order.resource) {
+        //             Some(value) => {
+        //                 let offer_handle = value.unwrap().0;
+        //                 let offer_price = value.unwrap().1;
+        //                 if offer_price <= order.max_price_per_unit {
+        //                     let offer_object = self.get_offer_by_handle(offer_handle).unwrap();
+        //                     if offer_object.amount < order.amount {
+        //                         // Consume offer
+        //                         order.amount -= offer_object.amount;
+        //                         // Give resources to company
+        //                         companies[order.company]
+        //                             .stock
+        //                             .add_to_stock(order.resource, offer_object.amount);
+        //                         // We consumed the hole amount of the offer and must therefore remove it from the market
+        //                         self.offers.remove(&offer_handle);
+        //                         // The prices might have changed, we need to update the index
+        //                         self.update_price_index();
+        //                     } else {
+        //                         // Give resources to company
+        //                         companies[order.company]
+        //                             .stock
+        //                             .add_to_stock(order.resource, order.amount);
+        //                         // We consumed the hole amount of the order and must therefore remove it from the market
+        //                         self.orders.remove(&order_handle);
+        //                         // The orders might have changed, we need to update the index
+        //                         self.update_order_index();
+        //                     }
+        //                 }
+        //             }
+        //             None => {
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
-    pub fn perform_paybacks(&mut self, companies: &mut Vec<Company>) {
-        let mut payback = self.paybacks.pop();
-        while payback.is_some() {
-            let company_handle = payback.unwrap().0;
-            let currency = payback.unwrap().1;
-            let player = &mut companies[company_handle];
-            player.currency += currency;
-            payback = self.paybacks.pop();
-        }
+    pub fn tick(&mut self, companies: &mut Vec<Company>) {
+        self.check_orders(companies);
+        self.update_order_index();
     }
 }
