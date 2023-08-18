@@ -1,45 +1,45 @@
 use serde::{Deserialize, Serialize};
 
-use crate::player::{Player, PlayerHandle};
+use crate::economy::company::{Company, CompanyHandle};
 use crate::worlddata::WorldData;
 
 #[derive(Serialize, Deserialize)]
 pub struct World {
-    pub players: Vec<Player>,
+    pub companies: Vec<Company>,
     pub data: WorldData,
 }
 
 impl World {
     pub fn new() -> World {
         World {
-            players: Vec::new(),
+            companies: Vec::new(),
             data: WorldData::new(),
         }
     }
 
     pub fn tick(&mut self) {
-        for player in self.players.iter_mut() {
-            player.tick(&mut self.data);
+        for company in self.companies.iter_mut() {
+            company.tick(&self.data);
         }
-        self.data.market_place.perform_paybacks(&mut self.players);
+        self.data.market_place.perform_paybacks(&mut self.companies);
     }
 
-    pub fn add_player(&mut self, player: Player) -> PlayerHandle {
-        self.players.push(player);
-        self.players.len() - 1
+    pub fn add_company(&mut self, company: Company) -> CompanyHandle {
+        self.companies.push(company);
+        self.companies.len() - 1
     }
 
-    pub fn get_player_by_handle(&mut self, player_handle: PlayerHandle) -> Option<&mut Player> {
-        if player_handle < self.players.len() {
-            Some(&mut self.players[player_handle])
+    pub fn get_company_by_handle(&mut self, company_handle: CompanyHandle) -> Option<&mut Company> {
+        if company_handle < self.companies.len() {
+            Some(&mut self.companies[company_handle])
         } else {
             None
         }
     }
 
-    pub fn get_player_name_by_handle(&self, player_handle: PlayerHandle) -> Option<&str> {
-        if player_handle < self.players.len() {
-            Some(&self.players[player_handle].name)
+    pub fn get_company_name_by_handle(&self, company_handle: CompanyHandle) -> Option<&str> {
+        if company_handle < self.companies.len() {
+            Some(&self.companies[company_handle].name)
         } else {
             None
         }

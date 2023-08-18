@@ -2,7 +2,6 @@ mod economy;
 mod info;
 mod market;
 mod persistence;
-mod player;
 mod world;
 mod worlddata;
 

@@ -22,16 +22,16 @@ const REWARD_GOAL: f64 = 0.0;
 const MIN_ACTION: f64 = -1.0;
 const MAX_ACTION: f64 = 1.0;
 
-pub struct EconomyPlayer {
+pub struct EconomyCompany {
     x: f64,
     v: f64,
 
     action_space: Interval,
 }
 
-impl EconomyPlayer {
-    pub fn new(x: f64, v: f64) -> EconomyPlayer {
-        EconomyPlayer {
+impl EconomyCompany {
+    pub fn new(x: f64, v: f64) -> EconomyCompany {
+        EconomyCompany {
             // TODO: Define state data
         }
     }
@@ -41,13 +41,13 @@ impl EconomyPlayer {
     }
 }
 
-impl Default for EconomyPlayer {
-    fn default() -> EconomyPlayer {
-        EconomyPlayer::new()
+impl Default for EconomyCompany {
+    fn default() -> EconomyCompany {
+        EconomyCompany::new()
     }
 }
 
-impl Domain for EconomyPlayer {
+impl Domain for EconomyCompany {
     type StateSpace = ProductSpace<Interval>;
     type ActionSpace = Interval;
 

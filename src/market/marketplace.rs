@@ -1,6 +1,6 @@
 use crate::economy::resource::ResourceHandle;
 use crate::market::offer::Offer;
-use crate::player::{Player, PlayerHandle};
+use crate::economy::company::{Company, CompanyHandle};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -11,7 +11,7 @@ pub struct Marketplace {
     pub offers: HashMap<OfferHandle, Offer>,
     pub price_index: HashMap<ResourceHandle, Option<(OfferHandle, f64)>>,
     pub resource_count: ResourceHandle,
-    paybacks: Vec<(PlayerHandle, f64)>,
+    paybacks: Vec<(CompanyHandle, f64)>,
     next_offer_id: OfferHandle,
 }
 
@@ -59,7 +59,7 @@ impl Marketplace {
         Some(&self.offers[&offer_handle])
     }
 
-    pub fn accept_offer(&mut self, offer: &mut Offer, player: &mut Player, amount: f64) {
+    pub fn accept_offer(&mut self, offer: &mut Offer, player: &mut Company, amount: f64) {
         if amount <= offer.amount {
             let price = offer.price_per_unit * amount;
             if price <= player.currency {
@@ -74,7 +74,7 @@ impl Marketplace {
         }
     }
 
-    pub fn perform_paybacks(&mut self, players: &mut Vec<Player>) {
+    pub fn perform_paybacks(&mut self, players: &mut Vec<Company>) {
         let mut payback = self.paybacks.pop();
         while payback.is_some() {
             let player_handle = payback.unwrap().0;

@@ -12,7 +12,7 @@ pub struct Processor {
 }
 
 impl<'a> Processor {
-    pub fn tick(&self, stock: &mut Stock, world: &mut WorldData) {
+    pub fn tick(&self, stock: &mut Stock, world: &WorldData) {
         // Get recipe
         let recipe = world.get_recipe_by_handle(self.recipe).unwrap();
         // Check if transaction can be done
