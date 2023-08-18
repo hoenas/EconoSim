@@ -1,5 +1,5 @@
 ---
-players:
+companies:
   - name: Hubert
     stock:
       resources:
@@ -16,6 +16,8 @@ players:
         production_speed: 1.2
         recipe: 0
         productive: true
+    orders: []
+    offers: []
   - name: Holger
     stock:
       resources:
@@ -27,6 +29,8 @@ players:
         production_speed: 1.2
         recipe: 0
         productive: true
+    orders: []
+    offers: []
   - name: Herbert
     stock:
       resources:
@@ -38,6 +42,8 @@ players:
         production_speed: 1.0
         recipe: 1
         productive: true
+    orders: []
+    offers: []
 data:
   processor_price: 1000.0
   resources:
@@ -70,14 +76,20 @@ data:
   market_place:
     resource_count: 3
     next_offer_id: 1
+    next_order_id: 0
     paybacks: []
     price_index:
       0: null
       1: null
       2: [0, 10]
+    order_index:
+      0: null
+      1: null
+      2: null
     offers:
       0:
         resource: 2
         amount: 25.0
         price_per_unit: 10
-        player: 0
+        company: 0
+    orders: {}
