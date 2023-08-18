@@ -118,6 +118,10 @@ impl Marketplace {
                                 companies[order.company]
                                     .stock
                                     .add_to_stock(order.resource, offer_object.amount);
+                                // Pay out offering company
+                                companies[offer_object.company].add_currency(
+                                    offer_object.amount * offer_object.price_per_unit,
+                                );
                                 // We consumed the hole amount of the offer and must therefore remove it from the market
                                 market_data.offers.remove(&offer_handle);
                             } else {
@@ -125,6 +129,9 @@ impl Marketplace {
                                 companies[order.company]
                                     .stock
                                     .add_to_stock(order.resource, order.amount);
+                                // Pay out offering company
+                                companies[offer_object.company]
+                                    .add_currency(offer_object.amount * order.amount);
                             }
                         } else {
                             break;
