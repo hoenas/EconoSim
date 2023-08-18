@@ -132,6 +132,7 @@ impl Marketplace {
                                 // Pay out offering company
                                 companies[offer_object.company]
                                     .add_currency(offer_object.amount * order.amount);
+                                order.amount = 0.0;
                             }
                         } else {
                             break;

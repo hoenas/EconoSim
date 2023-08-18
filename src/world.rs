@@ -55,6 +55,22 @@ impl World {
             );
         }
         info!("================================================================================");
+        info!("Market orders:");
+        for order in self.market_data.orders.iter() {
+            let company_name = self
+                .company_data
+                .get_company_name_by_handle(order.1.company)
+                .unwrap();
+            let resource_name = self
+                .resource_data
+                .get_resource_name_by_handle(order.1.resource)
+                .unwrap();
+            info!(
+                " - Company {} requests {} units of {} @ {} credits/unit max",
+                company_name, order.1.amount, resource_name, order.1.max_price_per_unit
+            );
+        }
+        info!("================================================================================");
     }
 
     pub fn tick(&mut self) {

@@ -98,6 +98,6 @@ market_data:
   orders:
     0:
       resource: 2
-      amount: 100.0
+      amount: 12.0
       max_price_per_unit: 12
       company: 1
