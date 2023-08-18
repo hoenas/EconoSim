@@ -55,7 +55,7 @@ impl Company {
 
     pub fn place_order(&mut self, resource: ResourceHandle, amount: f64, max_price_per_unit: f64) {
         self.orders.push(UnprocessedOrder {
-            resource_handle: resource,
+            resource: resource,
             amount: amount,
             max_price_per_unit: max_price_per_unit,
         });

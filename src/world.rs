@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::economy::company::{Company, CompanyHandle};
+use crate::market::offer::Offer;
+use crate::market::order::Order;
 use crate::worlddata::WorldData;
 
 #[derive(Serialize, Deserialize)]
@@ -18,8 +20,28 @@ impl World {
     }
 
     pub fn tick(&mut self) {
-        for company in self.companies.iter_mut() {
+        for (company_handle, company) in self.companies.iter_mut().enumerate() {
             company.tick(&self.data);
+            // Create offers
+            for offer in company.offers.iter_mut() {
+                self.data.market_place.place_offer(Offer {
+                    resource: offer.resource,
+                    amount: offer.amount,
+                    price_per_unit: offer.price_per_unit,
+                    company: company_handle,
+                });
+            }
+            company.offers.clear();
+            // Create orders
+            for order in company.orders.iter_mut() {
+                self.data.market_place.place_order(Order {
+                    resource: order.resource,
+                    amount: order.amount,
+                    max_price_per_unit: order.max_price_per_unit,
+                    company: company_handle,
+                });
+            }
+            company.orders.clear();
         }
         self.data.market_place.perform_paybacks(&mut self.companies);
     }
