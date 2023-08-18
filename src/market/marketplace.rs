@@ -48,13 +48,12 @@ impl Marketplace {
 
     pub fn get_cheapest_offer(&self, resource: ResourceHandle) -> Option<(OfferHandle, f64)> {
         let mut cheapest_offer: Option<(OfferHandle, f64)> = None;
-        for offer_handle in 0..self.offers.len() - 1 {
-            let offer = self.get_offer_by_handle(offer_handle).unwrap();
+        for (offer_handle, offer) in self.offers.iter() {
             if offer.resource == resource {
                 if cheapest_offer.is_none() {
-                    cheapest_offer = Some((offer_handle, offer.price_per_unit));
+                    cheapest_offer = Some((*offer_handle, offer.price_per_unit));
                 } else if cheapest_offer.unwrap().1 > offer.price_per_unit {
-                    cheapest_offer = Some((offer_handle, offer.price_per_unit));
+                    cheapest_offer = Some((*offer_handle, offer.price_per_unit));
                 }
             }
         }
@@ -63,13 +62,12 @@ impl Marketplace {
 
     pub fn get_highest_order(&self, resource: ResourceHandle) -> Option<(OrderHandle, f64)> {
         let mut highest_order: Option<(OrderHandle, f64)> = None;
-        for order_handle in 0..self.orders.len() - 1 {
-            let order = self.get_order_by_handle(order_handle).unwrap();
+        for (order_handle, order) in self.orders.iter() {
             if order.resource == resource {
                 if highest_order.is_none() {
-                    highest_order = Some((order_handle, order.max_price_per_unit));
+                    highest_order = Some((*order_handle, order.max_price_per_unit));
                 } else if highest_order.unwrap().1 < order.max_price_per_unit {
-                    highest_order = Some((order_handle, order.max_price_per_unit));
+                    highest_order = Some((*order_handle, order.max_price_per_unit));
                 }
             }
         }

@@ -4,7 +4,6 @@ use log::info;
 use serde::{Deserialize, Serialize};
 
 use crate::economy::resource::ResourceHandle;
-use crate::worlddata::WorldData;
 
 #[derive(Serialize, Deserialize)]
 
@@ -75,10 +74,9 @@ impl Stock {
         self.resources.insert(resource, new_value);
     }
 
-    pub fn print_stock(&self, world: &mut WorldData) {
+    pub fn print_stock(&self) {
         for (&resource_handle, amount) in self.resources.iter() {
-            let resource = world.get_resource_by_handle(resource_handle).unwrap();
-            info!("Resource {}: {}", resource.name, amount);
+            info!("Resource {}: {}", resource_handle, amount);
         }
     }
 }

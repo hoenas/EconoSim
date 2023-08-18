@@ -1,6 +1,6 @@
+use crate::world_data::recipe_data::RecipeData;
 use crate::economy::recipe::RecipeHandle;
 use crate::economy::stock::Stock;
-use crate::worlddata::WorldData;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -12,9 +12,9 @@ pub struct Processor {
 }
 
 impl<'a> Processor {
-    pub fn tick(&self, stock: &mut Stock, world: &WorldData) {
+    pub fn tick(&self, stock: &mut Stock, recipe_data: &RecipeData) {
         // Get recipe
-        let recipe = world.get_recipe_by_handle(self.recipe).unwrap();
+        let recipe = recipe_data.get_recipe_by_handle(self.recipe).unwrap();
         // Check if transaction can be done
         if self.productive && stock.make_transaction(&recipe.ingredients) {
             // Transaction can be done, add generated resources to stock

@@ -6,7 +6,7 @@ use crate::economy::resource::ResourceHandle;
 use crate::economy::stock::Stock;
 use crate::market::offer::UnprocessedOffer;
 use crate::market::order::UnprocessedOrder;
-use crate::worlddata::WorldData;
+use crate::world_data::recipe_data::RecipeData;
 use serde::{Deserialize, Serialize};
 
 pub type CompanyHandle = usize;
@@ -33,10 +33,10 @@ impl Company {
         }
     }
 
-    pub fn tick(&mut self, world: &WorldData) {
+    pub fn tick(&mut self, recipe_data: &RecipeData) {
         debug!("Company: {} economy tick", self.name);
         for processor in self.processors.iter() {
-            processor.tick(&mut self.stock, world);
+            processor.tick(&mut self.stock, recipe_data);
         }
     }
 

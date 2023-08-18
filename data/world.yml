@@ -1,57 +1,14 @@
 ---
-companies:
-  - name: Hubert
-    stock:
-      resources:
-        0: 1000.0
-        1: 1000.0
-        2: 1000.0
-    currency: 0.0
-    processors:
-      - name: Coal Pile
-        production_speed: 1.2
-        recipe: 0
-        productive: true
-      - name: Coal Pile
-        production_speed: 1.2
-        recipe: 0
-        productive: true
-    orders: []
-    offers: []
-  - name: Holger
-    stock:
-      resources:
-        1: 1000.0
-        0: 1000.0
-    currency: 0.0
-    processors:
-      - name: Coal Pile
-        production_speed: 1.2
-        recipe: 0
-        productive: true
-    orders: []
-    offers: []
-  - name: Herbert
-    stock:
-      resources:
-        2: 1000.0
-        3: 1000.0
-    currency: 0.0
-    processors:
-      - name: Iron Smelter
-        production_speed: 1.0
-        recipe: 1
-        productive: true
-    orders: []
-    offers: []
-data:
+processor_data:
   processor_price: 1000.0
+resource_data:
   resources:
     - name: Wood
     - name: Clay
     - name: Coal
     - name: IronOre
     - name: Iron
+recipe_data:
   recipes:
     - name: Coal
       ingredients:
@@ -73,23 +30,68 @@ data:
         - - 4
           - 0.1
       production_speed: 0.25
-  market_place:
-    resource_count: 3
-    next_offer_id: 1
-    next_order_id: 0
-    paybacks: []
-    price_index:
-      0: null
-      1: null
-      2: [0, 10]
-    order_index:
-      0: null
-      1: null
-      2: null
-    offers:
-      0:
-        resource: 2
-        amount: 25.0
-        price_per_unit: 10
-        company: 0
-    orders: {}
+company_data:
+  companies:
+    - name: Hubert
+      stock:
+        resources:
+          0: 1000.0
+          1: 1000.0
+          2: 1000.0
+      currency: 0.0
+      processors:
+        - name: Coal Pile
+          production_speed: 1.2
+          recipe: 0
+          productive: true
+        - name: Coal Pile
+          production_speed: 1.2
+          recipe: 0
+          productive: true
+      orders: []
+      offers: []
+    - name: Holger
+      stock:
+        resources:
+          1: 1000.0
+          0: 1000.0
+      currency: 0.0
+      processors:
+        - name: Coal Pile
+          production_speed: 1.2
+          recipe: 0
+          productive: true
+      orders: []
+      offers: []
+    - name: Herbert
+      stock:
+        resources:
+          2: 1000.0
+          3: 1000.0
+      currency: 0.0
+      processors:
+        - name: Iron Smelter
+          production_speed: 1.0
+          recipe: 1
+          productive: true
+      orders: []
+      offers: []
+market_place:
+  resource_count: 3
+  next_offer_id: 1
+  next_order_id: 0
+  price_index:
+    0: null
+    1: null
+    2: [0, 10]
+  order_index:
+    0: null
+    1: null
+    2: null
+  offers:
+    0:
+      resource: 2
+      amount: 25.0
+      price_per_unit: 10
+      company: 0
+  orders: {}
