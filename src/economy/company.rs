@@ -79,7 +79,7 @@ impl Company {
     }
 
     pub fn update_company_value(&mut self, market_data: &MarketData, processor_value: f64) -> f64 {
-        let mut new_company_value = 0.0;
+        let mut new_company_value = self.currency;
         // Add value of all processors
         new_company_value += self.processors.len() as f64 * processor_value;
         // Add stockpile value
