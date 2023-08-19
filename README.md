@@ -26,6 +26,9 @@ Potential features:
     - Banks get the money back with interest
     - Companys may fail with paying back
     - Banks may fail
+- Shares
+    - Companies can sell shares to get currency
+    - Comapnies can be bought by other companies using shares
 - AI agent
     - An AI agent controls a company
     - Agent success is measured with the following factors:
