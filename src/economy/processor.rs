@@ -1,6 +1,6 @@
-use crate::world_data::recipe_data::RecipeData;
 use crate::economy::recipe::RecipeHandle;
 use crate::economy::stock::Stock;
+use crate::world_data::recipe_data::RecipeData;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
