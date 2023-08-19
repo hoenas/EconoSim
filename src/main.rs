@@ -1,12 +1,9 @@
 mod economy;
-mod info;
 mod market;
 mod persistence;
-mod player;
 mod world;
-mod worlddata;
+mod world_data;
 
-use info::Info;
 use log::info;
 use persistence::Persistence;
 use simple_logger::SimpleLogger;
@@ -21,9 +18,10 @@ fn main() {
 
     // Sim loop
     let periode = Duration::from_millis(500);
+    world.print_world_info();
     loop {
         world.tick();
-        Info::print(&mut world);
+        world.print_world_info();
         thread::sleep(periode);
     }
 }
