@@ -18,6 +18,7 @@ fn main() {
 
     // Sim loop
     let periode = Duration::from_millis(500);
+    world.print_world_info();
     loop {
         world.tick();
         world.print_world_info();

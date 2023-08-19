@@ -100,4 +100,9 @@ market_data:
       resource: 2
       amount: 12.0
       max_price_per_unit: 12
-      company: 1
+      company: 2
+    1:
+      resource: 2
+      amount: 20
+      max_price_per_unit: 12
+      company: 2

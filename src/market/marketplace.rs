@@ -104,35 +104,43 @@ impl Marketplace {
     fn execute_orders(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
         // Check all orders
         for order in market_data.orders.values_mut() {
+            // We are trying to fulfill the hole order
             while order.amount > 0.0 {
                 match self.get_cheapest_offer(order.resource, &market_data.offers) {
                     Some(value) => {
                         let offer_handle = value.0;
                         let offer_price = value.1;
                         if offer_price <= order.max_price_per_unit {
-                            let offer_object = Some(&market_data.offers[&offer_handle]).unwrap();
-                            if offer_object.amount < order.amount {
-                                // Consume offer
-                                order.amount -= offer_object.amount;
-                                // Give resources to company
-                                companies[order.company]
-                                    .stock
-                                    .add_to_stock(order.resource, offer_object.amount);
-                                // Pay out offering company
-                                companies[offer_object.company].add_currency(
-                                    offer_object.amount * offer_object.price_per_unit,
-                                );
-                                // We consumed the hole amount of the offer and must therefore remove it from the market
-                                market_data.offers.remove(&offer_handle);
-                            } else {
-                                // Give resources to company
-                                companies[order.company]
-                                    .stock
-                                    .add_to_stock(order.resource, order.amount);
-                                // Pay out offering company
-                                companies[offer_object.company]
-                                    .add_currency(offer_object.amount * order.amount);
-                                order.amount = 0.0;
+                            match market_data.offers.get_mut(&offer_handle) {
+                                Some(offer) => {
+                                    if offer.amount < order.amount {
+                                        // Consume offer
+                                        order.amount -= offer.amount;
+                                        // Give resources to company
+                                        companies[order.company]
+                                            .stock
+                                            .add_to_stock(order.resource, offer.amount);
+                                        // Pay out offering company
+                                        companies[offer.company]
+                                            .add_currency(offer.amount * offer.price_per_unit);
+                                        // We consumed the hole amount of the offer and must therefore remove it from the market
+                                        market_data.offers.remove(&offer_handle);
+                                    } else {
+                                        // Give resources to ordering company
+                                        companies[order.company]
+                                            .stock
+                                            .add_to_stock(order.resource, order.amount);
+                                        // Pay out offering company
+                                        companies[offer.company]
+                                            .add_currency(offer.amount * order.amount);
+                                        // Reduce offer and order amount
+                                        offer.amount -= order.amount;
+                                        order.amount = 0.0;
+                                    }
+                                }
+                                None => {
+                                    break;
+                                }
                             }
                         } else {
                             break;
