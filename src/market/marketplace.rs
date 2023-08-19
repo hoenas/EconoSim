@@ -36,7 +36,7 @@ impl Marketplace {
         }
     }
 
-    fn get_cheapest_offer(
+    pub fn get_cheapest_offer(
         &self,
         resource: ResourceHandle,
         offers: &HashMap<OfferHandle, Offer>,
