@@ -35,7 +35,8 @@ impl World {
         for company in self.company_data.companies.iter() {
             info!("Company: {}", company.name);
             info!("Currency: {}", company.currency);
-            company.stock.print_stock();
+            info!("Value: {}", company.company_value);
+            company.stock.print_stock(&self.resource_data);
             info!("");
         }
         info!("================================================================================");
@@ -77,6 +78,7 @@ impl World {
         // TODO: Shuffle iterator in order to avoid bias
         for (company_handle, company) in self.company_data.companies.iter_mut().enumerate() {
             company.tick(&self.recipe_data);
+            company.update_company_value(&self.market_data, self.processor_data.processor_price);
             // Create offers
             for offer in company.offers.iter_mut() {
                 self.market_place.place_offer(

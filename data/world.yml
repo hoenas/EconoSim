@@ -33,6 +33,7 @@ recipe_data:
 company_data:
   companies:
     - name: Hubert
+      id: 0
       stock:
         resources:
           0: 1000.0
@@ -50,7 +51,9 @@ company_data:
           productive: true
       orders: []
       offers: []
+      company_value: 0.0
     - name: Holger
+      id: 1
       stock:
         resources:
           1: 1000.0
@@ -63,7 +66,9 @@ company_data:
           productive: true
       orders: []
       offers: []
+      company_value: 0.0
     - name: Herbert
+      id: 2
       stock:
         resources:
           2: 1000.0
@@ -76,6 +81,7 @@ company_data:
           productive: true
       orders: []
       offers: []
+      company_value: 0.0
 market_place:
   next_offer_id: 1
   next_order_id: 0
