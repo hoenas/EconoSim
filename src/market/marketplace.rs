@@ -71,18 +71,32 @@ impl Marketplace {
         highest_order
     }
 
-    pub fn place_offer(&mut self, offer: Offer, market_data: &mut MarketData) -> OfferHandle {
+    pub fn place_offer(
+        &mut self,
+        offer: Offer,
+        market_data: &mut MarketData,
+    ) -> Option<OfferHandle> {
+        if offer.amount <= 0.0 {
+            return None;
+        }
         self.next_offer_id += 1;
         market_data.offers.insert(self.next_offer_id, offer);
         self.update_price_index(market_data);
-        self.next_offer_id
+        Some(self.next_offer_id)
     }
 
-    pub fn place_order(&mut self, order: Order, market_data: &mut MarketData) -> OfferHandle {
+    pub fn place_order(
+        &mut self,
+        order: Order,
+        market_data: &mut MarketData,
+    ) -> Option<OfferHandle> {
+        if order.amount <= 0.0 {
+            return None;
+        }
         self.next_order_id += 1;
         market_data.orders.insert(self.next_order_id, order);
         self.update_order_index(market_data);
-        self.next_order_id
+        Some(self.next_order_id)
     }
 
     pub fn get_offer_by_handle(
