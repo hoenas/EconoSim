@@ -38,3 +38,17 @@ Potential features:
         - Current production rate
         - Currency influx
         - Currency
+
+
+# Reinforment Learning
+Observation Vector:
+- Price index
+- Stock
+- Currency
+- Production rate?
+
+Action Space:
+- Buy processor
+- Sell processor
+- Create order
+- Create offer
