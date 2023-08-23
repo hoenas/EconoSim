@@ -2,15 +2,12 @@ use crate::economy::processor::Processor;
 use crate::economy::recipe::RecipeHandle;
 use crate::economy::resource::ResourceHandle;
 use crate::economy::stock::Stock;
-use crate::market::offer::OfferHandle;
 use crate::market::offer::UnprocessedOffer;
 use crate::market::order::UnprocessedOrder;
-use crate::world_data::company_data;
-use crate::world_data::market_data::MarketData;
 use crate::world_data::recipe_data::RecipeData;
+use crate::world_data::market_data::MarketData;
 use log::debug;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 pub type CompanyHandle = usize;
 
@@ -62,18 +59,18 @@ impl Company {
 
     pub fn place_order(&mut self, resource: ResourceHandle, amount: f64, max_price_per_unit: f64) {
         self.orders.push(UnprocessedOrder {
-            resource: resource,
-            amount: amount,
-            max_price_per_unit: max_price_per_unit,
+            resource,
+            amount,
+            max_price_per_unit,
         });
     }
 
     pub fn place_offer(&mut self, resource: ResourceHandle, amount: f64, price_per_unit: f64) {
         if self.stock.remove_from_stock_if_possible(resource, amount) {
             self.offers.push(UnprocessedOffer {
-                resource: resource,
-                amount: amount,
-                price_per_unit: price_per_unit,
+                resource,
+                amount,
+                price_per_unit,
             });
         }
     }

@@ -3,6 +3,7 @@ mod market;
 mod persistence;
 mod world;
 mod world_data;
+mod reinforcement_learning;
 
 use log::info;
 use persistence::Persistence;
