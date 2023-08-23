@@ -76,7 +76,8 @@ impl Marketplace {
         offer: Offer,
         market_data: &mut MarketData,
     ) -> Option<OfferHandle> {
-        if offer.amount <= 0.0 {
+        // Offer sanity checks
+        if offer.amount <= 0.0 || offer.resource >= market_data.resource_count {
             return None;
         }
         self.next_offer_id += 1;
@@ -90,7 +91,8 @@ impl Marketplace {
         order: Order,
         market_data: &mut MarketData,
     ) -> Option<OfferHandle> {
-        if order.amount <= 0.0 {
+        // Order sanity checks
+        if order.amount <= 0.0 || order.resource >= market_data.resource_count {
             return None;
         }
         self.next_order_id += 1;
@@ -134,6 +136,11 @@ impl Marketplace {
                                         companies[order.company]
                                             .stock
                                             .add_to_stock(order.resource, offer.amount);
+                                        // Give delta currency from max price back
+                                        let price_delta = (order.max_price_per_unit
+                                            - offer.price_per_unit)
+                                            * offer.amount;
+                                        companies[order.company].add_currency(price_delta);
                                         // Pay out offering company
                                         companies[offer.company]
                                             .add_currency(offer.amount * offer.price_per_unit);
@@ -144,6 +151,11 @@ impl Marketplace {
                                         companies[order.company]
                                             .stock
                                             .add_to_stock(order.resource, order.amount);
+                                        // Give delta currency from max price back
+                                        let price_delta = (order.max_price_per_unit
+                                            - offer.price_per_unit)
+                                            * order.amount;
+                                        companies[order.company].add_currency(price_delta);
                                         // Pay out offering company
                                         companies[offer.company]
                                             .add_currency(offer.amount * order.amount);

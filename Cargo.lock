@@ -13,6 +13,7 @@ dependencies = [
  "serde",
  "serde_yaml",
  "simple_logger",
+ "spaces 6.0.0",
 ]
 
 [[package]]
@@ -281,6 +282,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.10.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -326,7 +336,7 @@ checksum = "afefd404162712a4f1b3d99d81a6729e0d7344262c1e18d4d2c3aa59e097523e"
 dependencies = [
  "itertools 0.9.0",
  "ndarray 0.13.1",
- "spaces",
+ "spaces 5.0.0",
 ]
 
 [[package]]
@@ -688,7 +698,7 @@ dependencies = [
  "rsrl_derive",
  "rsrl_domains",
  "rstat",
- "spaces",
+ "spaces 5.0.0",
  "special-fun",
 ]
 
@@ -711,7 +721,7 @@ checksum = "91aebce7f2f508d183259f3b6115d9a2524f171d7ce40bed8a3acc32bcf5f592"
 dependencies = [
  "ndarray 0.12.1",
  "rand 0.7.3",
- "spaces",
+ "spaces 5.0.0",
 ]
 
 [[package]]
@@ -725,7 +735,7 @@ dependencies = [
  "num",
  "rand 0.7.3",
  "rand_distr",
- "spaces",
+ "spaces 5.0.0",
  "special-fun",
 ]
 
@@ -802,6 +812,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5897ef48e6efcee1ca844267cd2036bc67e056612c48e445e240dbe25e193ceb"
 dependencies = [
  "itertools 0.8.2",
+ "num-traits",
+]
+
+[[package]]
+name = "spaces"
+version = "6.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95d3b85c1776f057a590bfa5efa30ab1b0db78beb6bde606d1f9f590ca4ba4e8"
+dependencies = [
+ "itertools 0.10.5",
  "num-traits",
 ]
 

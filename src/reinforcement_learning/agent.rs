@@ -1,39 +1,35 @@
-use rurel::mdp::Agent;
-use crate::reinforcement_learning::state::CompanyState;
+use std::default;
+use std::vec;
+
+use crate::economy::company::Company;
 use crate::reinforcement_learning::state::CompanyAction;
-use crate::reinforcement_learning::state::ActionIdentifier;
+use crate::reinforcement_learning::state::CompanyState;
+use rurel::mdp::Agent;
+use serde::{Deserialize, Serialize};
 
+static DUMMY_STATE: CompanyState = CompanyState {
+    stock: vec![],
+    currency: 0,
+    price_index: vec![],
+    order_index: vec![],
+};
 
-struct CompanyAgent {
-    state: CompanyState,
-}
-
+#[derive(Serialize, Deserialize)]
+pub struct CompanyAgent {}
 
 impl Agent<CompanyState> for CompanyAgent {
     fn current_state(&self) -> &CompanyState {
-        &self.state
+        &DUMMY_STATE
     }
     fn take_action(&mut self, action: &CompanyAction) {
-        match action.action {
-            ActionIdentifier::Nothing => {
+        match action {
+            CompanyAction::Nothing => {
                 // do nothing
             }
-            ActionIdentifier::BuyProcessor(processor_handle) => {
-                
-            }
-            ActionIdentifier::SellProcessor(processor_handle) => {
-                
-            }
-            ActionIdentifier::BuyResource(resource_handle, amount, price) => {
-                
-            }
-            ActionIdentifier::SellResource(resource_handle, amount, price) => {
-                
-            }
+            CompanyAction::BuyProcessor(processor_handle) => {}
+            CompanyAction::SellProcessor(processor_handle) => {}
+            CompanyAction::BuyResource(resource_handle, amount, price) => {}
+            CompanyAction::SellResource(resource_handle, amount, price) => {}
         }
     }
-}
-
-impl CompanyAgent {
-
 }

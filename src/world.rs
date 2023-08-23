@@ -1,22 +1,28 @@
 use crate::market::marketplace::Marketplace;
 use crate::market::offer::Offer;
 use crate::market::order::Order;
+use crate::reinforcement_learning::agent::CompanyAgent;
 use crate::world_data::company_data::CompanyData;
 use crate::world_data::market_data::MarketData;
 use crate::world_data::processor_data::ProcessorData;
 use crate::world_data::recipe_data::RecipeData;
 use crate::world_data::resource_data::ResourceData;
 use log::info;
+use rurel::strategy::explore::RandomExploration;
+use rurel::strategy::learn::QLearning;
+use rurel::strategy::terminate::SinkStates;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct World {
-    pub company_data: CompanyData,
-    pub processor_data: ProcessorData,
-    pub recipe_data: RecipeData,
-    pub resource_data: ResourceData,
-    pub market_data: MarketData,
-    pub market_place: Marketplace,
+    company_data: CompanyData,
+    processor_data: ProcessorData,
+    recipe_data: RecipeData,
+    resource_data: ResourceData,
+    market_data: MarketData,
+    market_place: Marketplace,
+    agent: CompanyAgent,
+    learning_strategy_params: (f64, f64, f64),
 }
 
 impl World {
@@ -28,6 +34,8 @@ impl World {
             resource_data: ResourceData::new(),
             market_data: MarketData::new(),
             market_place: Marketplace::new(),
+            agent: CompanyAgent {},
+            learning_strategy_params: (0.2, 0.01, 2.0),
         }
     }
 
@@ -75,12 +83,26 @@ impl World {
     }
 
     pub fn tick(&mut self) {
+        let mut exploration_strategy = RandomExploration::new();
+        let mut learning_strategy = QLearning::new(0.2, 0.01, 2.);
+        let mut termination_strategy = SinkStates {};
+        // Update companies
         // TODO: Shuffle iterator in order to avoid bias
         for (company_handle, company) in self.company_data.companies.iter_mut().enumerate() {
-            company.tick(&self.recipe_data);
-            company.update_company_value(&self.market_data, self.processor_data.processor_price);
+            company.tick(
+                &self.recipe_data,
+                &mut self.agent,
+                &mut exploration_strategy,
+                &self.market_data,
+            );
             // Create offers
             for offer in company.offers.iter_mut() {
+                if !company
+                    .stock
+                    .remove_from_stock_if_possible(offer.resource, offer.amount)
+                {
+                    continue;
+                }
                 self.market_place.place_offer(
                     Offer {
                         resource: offer.resource,
@@ -94,6 +116,11 @@ impl World {
             company.offers.clear();
             // Create orders
             for order in company.orders.iter_mut() {
+                let order_price = order.max_price_per_unit * order.amount;
+                if company.currency < order_price {
+                    continue;
+                }
+                company.currency -= order_price;
                 self.market_place.place_order(
                     Order {
                         resource: order.resource,
@@ -106,7 +133,18 @@ impl World {
             }
             company.orders.clear();
         }
+        // Update market
         self.market_place
             .tick(&mut self.market_data, &mut self.company_data.companies);
+        // Train companies
+        for (company_handle, company) in self.company_data.companies.iter_mut().enumerate() {
+            company.train(
+                &self.market_data,
+                self.processor_data.processor_price,
+                &mut self.agent,
+                &mut learning_strategy,
+                &mut termination_strategy,
+            )
+        }
     }
 }
