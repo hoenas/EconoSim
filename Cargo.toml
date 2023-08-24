@@ -11,6 +11,4 @@ simple_logger = "1.13.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 clap = "3.2.22"
-rsrl = "0.8.1"
 rurel = "0.4.0"
-spaces = "6.0.0"

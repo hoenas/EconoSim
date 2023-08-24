@@ -10,6 +10,7 @@ use crate::reinforcement_learning::state::CompanyAction;
 use crate::reinforcement_learning::state::CompanyState;
 use crate::world_data::market_data::MarketData;
 use crate::world_data::recipe_data::RecipeData;
+use log::debug;
 use rurel::strategy::explore::RandomExploration;
 use rurel::strategy::learn::QLearning;
 use rurel::strategy::terminate::SinkStates;
@@ -53,6 +54,7 @@ impl Company {
         agent: &mut CompanyAgent,
         exploration_strategy: &mut RandomExploration,
         market_data: &MarketData,
+        processor_price: f64,
     ) {
         for processor in self.processors.iter() {
             processor.tick(&mut self.stock, recipe_data);
@@ -85,11 +87,13 @@ impl Company {
                 // do nothing
             }
             CompanyAction::BuyProcessor(recipe) => {
-                self.buy_processor(recipe);
+                if recipe_data.recipes.len() <= recipe {
+                    return;
+                }
+                self.buy_processor(recipe, processor_price);
             }
             CompanyAction::SellProcessor(processor) => {
-                // TODO: Only create order if resource exists
-                self.buy_processor(processor);
+                self.sell_processor(processor, processor_price);
             }
             CompanyAction::BuyResource(resource, amount, max_price) => {
                 self.place_order(resource, amount as f64, max_price as f64);
@@ -127,9 +131,29 @@ impl Company {
     }
 
     // Methods to be used by an AI controller
-    pub fn buy_processor(&mut self, recipe: RecipeHandle) {}
+    pub fn buy_processor(&mut self, recipe: RecipeHandle, processor_price: f64) {
+        if self.currency < processor_price {
+            return;
+        }
+        self.currency -= processor_price;
+        let proc = Processor {
+            name: String::from("Proc"),
+            production_speed: 1.0,
+            recipe: recipe,
+            productive: true,
+        };
+        self.processors.push(proc);
+        debug!("{} bought one!", self.name);
+    }
 
-    pub fn sell_processor(&mut self, processor: Processor) {}
+    pub fn sell_processor(&mut self, processor: usize, processor_price: f64) {
+        if self.processors.len() <= processor {
+            return;
+        }
+        self.currency += processor_price;
+        self.processors.remove(processor);
+        debug!("{} sold one!", self.name);
+    }
 
     pub fn place_order(&mut self, resource: ResourceHandle, amount: f64, max_price_per_unit: f64) {
         self.orders.push(UnprocessedOrder {
@@ -164,21 +188,21 @@ impl Company {
                 };
             }
         }
-        let old_company_value = self.company_value;
         // Add companies offers current value
-        for order in market_data.offers.values() {
-            if order.company != self.id {
+        for offer in market_data.offers.values() {
+            if offer.company != self.id {
                 continue;
             }
-            match market_data.price_index[&order.resource] {
+            match market_data.price_index[&offer.resource] {
                 Some((_, price)) => {
-                    new_company_value += order.amount * price;
+                    new_company_value += offer.amount * price;
                 }
                 None => {
                     break;
                 }
             };
         }
+        let old_company_value = self.company_value;
         self.company_value = new_company_value;
         self.company_value - old_company_value
     }

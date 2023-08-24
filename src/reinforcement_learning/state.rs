@@ -35,15 +35,14 @@ impl State for CompanyState {
         for i in 0..2 {
             actionspace.push(CompanyAction::BuyProcessor(i));
         }
-        for i in 0..10 {
-            actionspace.push(CompanyAction::SellProcessor(i));
-        }
-        for i in 0..5 {
-            for k in 0..100 {
-                for j in 0..100 {
-                    actionspace.push(CompanyAction::BuyResource(i, k, j));
-                    actionspace.push(CompanyAction::SellResource(i, k, j));
-                }
+        // for i in 0..10 {
+        //     actionspace.push(CompanyAction::SellProcessor(i));
+        // }
+        for i in 1..5 {
+            for k in 0..10 {
+                let k_value = (2 as usize).pow(k);
+                actionspace.push(CompanyAction::BuyResource(i, 5, k_value));
+                actionspace.push(CompanyAction::SellResource(i, 5, k_value));
             }
         }
         actionspace

@@ -1,7 +1,5 @@
-use std::default;
 use std::vec;
 
-use crate::economy::company::Company;
 use crate::reinforcement_learning::state::CompanyAction;
 use crate::reinforcement_learning::state::CompanyState;
 use rurel::mdp::Agent;

@@ -94,6 +94,7 @@ impl World {
                 &mut self.agent,
                 &mut exploration_strategy,
                 &self.market_data,
+                self.processor_data.processor_price,
             );
             // Create offers
             for offer in company.offers.iter_mut() {

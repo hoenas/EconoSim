@@ -21,7 +21,7 @@ fn main() {
     let periode = Duration::from_millis(500);
     world.print_world_info();
     loop {
-        for i in 0..10000 {
+        for i in 0..1000000 {
             if i % 100 == 0 {
                 info!("Progress: {}", i);
             }
