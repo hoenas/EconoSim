@@ -14,6 +14,7 @@ fn main() {
     SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
     let num = NumberFormat::new();
+    let epoche_length = 100000;
     // Load world
     let mut trained_world = Persistence::load_prestine_world();
     let mut old_company_values: Vec<f64> = trained_world
@@ -30,27 +31,18 @@ fn main() {
         .collect();
     for i in 0..1000 {
         info!("Episode {i}");
-        let mut tmp_world = Persistence::load_prestine_world();
-        for (i, company) in tmp_world.company_data.companies.iter_mut().enumerate() {
-            company.trainer = trained_world.company_data.companies[i].trainer.clone();
-        }
-        trained_world = tmp_world;
-        for k in 0..100000 {
+        for k in 0..epoche_length {
             if k % 10000 == 0 {
                 info!("Trainning progress: {k}");
             }
-            trained_world.tick(true);
+            trained_world.tick(true, 1.0 / ((k + 1) as f64));
         }
 
         for k in 0..100000 {
             if k % 10000 == 0 {
                 info!("Simulation progress: {k}");
             }
-            trained_world.tick(false);
-        }
-        let mut tmp_world = Persistence::load_prestine_world();
-        for (i, company) in tmp_world.company_data.companies.iter_mut().enumerate() {
-            company.trainer = trained_world.company_data.companies[i].trainer.clone();
+            trained_world.tick(false, 0.0);
         }
         info!("Company value development:");
         for (i, company) in trained_world.company_data.companies.iter_mut().enumerate() {

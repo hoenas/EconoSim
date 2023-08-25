@@ -1,7 +1,7 @@
 use crate::market::marketplace::Marketplace;
 use crate::market::offer::Offer;
 use crate::market::order::Order;
-use crate::reinforcement_learning::agent::CompanyAgent;
+use crate::reinforcement_learning::action::ActionSpace;
 use crate::world_data::company_data::CompanyData;
 use crate::world_data::consumer_data::ConsumerData;
 use crate::world_data::market_data::MarketData;
@@ -10,9 +10,6 @@ use crate::world_data::producer_data::ProducerData;
 use crate::world_data::recipe_data::RecipeData;
 use crate::world_data::resource_data::ResourceData;
 use log::info;
-use rurel::strategy::explore::RandomExploration;
-use rurel::strategy::learn::QLearning;
-use rurel::strategy::terminate::SinkStates;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -25,8 +22,7 @@ pub struct World {
     pub consumer_data: ConsumerData,
     pub market_data: MarketData,
     pub market_place: Marketplace,
-    pub agent: CompanyAgent,
-    pub learning_strategy_params: (f64, f64, f64),
+    pub actionspace: ActionSpace,
 }
 
 impl World {
@@ -40,8 +36,7 @@ impl World {
             consumer_data: ConsumerData::new(),
             market_data: MarketData::new(),
             market_place: Marketplace::new(),
-            agent: CompanyAgent {},
-            learning_strategy_params: (0.2, 0.01, 2.0),
+            actionspace: ActionSpace::new(),
         }
     }
 
@@ -143,17 +138,16 @@ impl World {
         }
     }
 
-    fn update_companies(&mut self, train: bool) {
-        let mut exploration_strategy = RandomExploration::new();
+    fn update_companies(&mut self, train: bool, exploration_factor: f64) {
         // TODO: Shuffle iterator in order to avoid bias
         for (company_handle, company) in self.company_data.companies.iter_mut().enumerate() {
             company.tick(
                 &self.recipe_data,
-                &mut self.agent,
-                &mut exploration_strategy,
                 &self.market_data,
                 self.processor_data.processor_price,
+                &self.actionspace,
                 train,
+                exploration_factor,
             );
             // Create offers
             for offer in company.offers.iter_mut() {
@@ -197,35 +191,15 @@ impl World {
         }
     }
 
-    fn train_companies(&mut self) {
-        let mut learning_strategy = QLearning::new(
-            self.learning_strategy_params.0,
-            self.learning_strategy_params.1,
-            self.learning_strategy_params.2,
-        );
-        let mut termination_strategy = SinkStates {};
-        for company in self.company_data.companies.iter_mut() {
-            company.train(
-                &self.market_data,
-                self.processor_data.processor_price,
-                &mut self.agent,
-                &mut learning_strategy,
-                &mut termination_strategy,
-            )
-        }
-    }
-
-    pub fn tick(&mut self, train: bool) {
+    pub fn tick(&mut self, train: bool, exploration_factor: f64) {
         // Update producers
         self.update_producers();
         // Update consumers
         self.update_consumers();
         // Update companies
-        self.update_companies(train);
+        self.update_companies(train, exploration_factor);
         // Update market
         self.market_place
             .tick(&mut self.market_data, &mut self.company_data.companies);
-        // Train companies
-        self.train_companies();
     }
 }

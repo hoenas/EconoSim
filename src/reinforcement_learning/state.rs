@@ -1,4 +1,4 @@
-use rurel::mdp::State;
+use crate::reinforcement_learning::action::CompanyAction;
 use serde::{Deserialize, Serialize};
 // Constants
 
@@ -14,21 +14,7 @@ pub struct CompanyState {
     pub order_index: Vec<usize>,
 }
 
-#[derive(PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
-pub enum CompanyAction {
-    Nothing,
-    BuyProcessor(usize),
-    SellProcessor(usize),
-    BuyResource(usize, usize, usize),
-    SellResource(usize, usize, usize),
-}
-
-impl State for CompanyState {
-    type A = CompanyAction;
-    fn reward(&self) -> f64 {
-        // TODO: Add reward function
-        return 0.0;
-    }
+impl CompanyState {
     fn actions(&self) -> Vec<CompanyAction> {
         let mut actionspace: Vec<CompanyAction> = Vec::new();
         actionspace.push(CompanyAction::Nothing);
@@ -57,5 +43,17 @@ impl CompanyState {
             price_index: (0..resource_count).collect(),
             order_index: (0..resource_count).collect(),
         }
+    }
+
+    pub fn as_f64_vec(&self) -> Vec<f64> {
+        let mut return_value: Vec<f64> = vec![];
+        let mut stock_vec: Vec<f64> = self.stock.iter().map(|x| *x as f64).collect();
+        return_value.append(&mut stock_vec);
+        return_value.push(self.currency as f64);
+        let mut price_index_vec: Vec<f64> = self.price_index.iter().map(|x| *x as f64).collect();
+        return_value.append(&mut price_index_vec);
+        let mut order_index_vec: Vec<f64> = self.order_index.iter().map(|x| *x as f64).collect();
+        return_value.append(&mut order_index_vec);
+        return_value
     }
 }

@@ -1,3 +1,3 @@
-pub mod agent;
-pub mod company_trainer;
+pub mod action;
+pub mod deep_rl_agent;
 pub mod state;

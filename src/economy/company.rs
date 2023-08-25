@@ -4,19 +4,16 @@ use crate::economy::resource::ResourceHandle;
 use crate::economy::stock::Stock;
 use crate::market::offer::UnprocessedOffer;
 use crate::market::order::UnprocessedOrder;
-use crate::reinforcement_learning::agent::CompanyAgent;
-use crate::reinforcement_learning::company_trainer::CompanyTrainer;
-use crate::reinforcement_learning::state::CompanyAction;
+use crate::reinforcement_learning::action::ActionSpace;
+use crate::reinforcement_learning::action::CompanyAction;
+use crate::reinforcement_learning::deep_rl_agent::DeepRLAgent;
 use crate::reinforcement_learning::state::CompanyState;
 use crate::world_data::market_data::MarketData;
 use crate::world_data::recipe_data::RecipeData;
-use rurel::strategy::explore::RandomExploration;
-use rurel::strategy::learn::QLearning;
-use rurel::strategy::terminate::SinkStates;
 use serde::{Deserialize, Serialize};
 pub type CompanyHandle = usize;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Company {
     pub name: String,
     pub stock: Stock,
@@ -26,12 +23,21 @@ pub struct Company {
     pub offers: Vec<UnprocessedOffer>,
     pub company_value: f64,
     pub id: CompanyHandle,
-    pub trainer: CompanyTrainer,
+    pub agent: DeepRLAgent,
+    old_state: CompanyState,
     last_action: CompanyAction,
+    old_company_value: f64,
 }
 
 impl Company {
-    pub fn new(name: &str, company_handle: CompanyHandle, resource_count: usize) -> Self {
+    pub fn new(
+        name: &str,
+        company_handle: CompanyHandle,
+        resource_count: usize,
+        state_dimensions: i32,
+        action_dimensions: i32,
+        discount: f64,
+    ) -> Self {
         Company {
             name: name.to_string(),
             stock: Stock::new(),
@@ -41,19 +47,21 @@ impl Company {
             offers: vec![],
             company_value: 0.0,
             id: company_handle,
-            trainer: CompanyTrainer::new(CompanyState::new(resource_count)),
+            agent: DeepRLAgent::new(state_dimensions, action_dimensions, discount),
+            old_state: CompanyState::new(resource_count),
             last_action: CompanyAction::Nothing,
+            old_company_value: 0.0,
         }
     }
 
     pub fn tick(
         &mut self,
         recipe_data: &RecipeData,
-        agent: &mut CompanyAgent,
-        exploration_strategy: &mut RandomExploration,
         market_data: &MarketData,
         processor_price: f64,
+        actionspace: &ActionSpace,
         train: bool,
+        exploration_factor: f64,
     ) {
         for processor in self.processors.iter() {
             processor.tick(&mut self.stock, recipe_data);
@@ -66,7 +74,7 @@ impl Company {
                 .price_index
                 .values()
                 .filter(|x| x.is_some())
-                .map(|x| x.unwrap().1 as usize)
+                .map(|x: &Option<(usize, f64)>| x.unwrap().1 as usize)
                 .collect(),
             order_index: market_data
                 .order_index
@@ -75,18 +83,20 @@ impl Company {
                 .map(|x| x.unwrap().1 as usize)
                 .collect(),
         };
-        let mut action = self.trainer.best_action(&company_state);
-        if train || action.is_none() {
-            // Select action by agent
-            action = Some(self.trainer.exploration_step(
-                company_state,
-                agent,
-                exploration_strategy,
-            ));
-            self.last_action = action.clone().unwrap();
+
+        if train {
+            self.agent.train(
+                self.old_state.as_f64_vec(),
+                self.company_value - self.old_company_value,
+                company_state.as_f64_vec(),
+            );
         }
+        let action = self
+            .agent
+            .get_next_state_action(company_state.as_f64_vec(), exploration_factor);
+        self.old_state = company_state;
         // Act according to agent decision
-        match action.unwrap() {
+        match actionspace.actions[action] {
             CompanyAction::Nothing => {
                 // do nothing
             }
@@ -106,24 +116,6 @@ impl Company {
                 self.place_offer(resource, amount as f64, price as f64)
             }
         }
-    }
-
-    pub fn train(
-        &mut self,
-        market_data: &MarketData,
-        processor_value: f64,
-        agent: &mut CompanyAgent,
-        learning_strategy: &mut QLearning,
-        termination_strategy: &mut SinkStates,
-    ) {
-        let reward = self.update_company_value(market_data, processor_value) - 100.0;
-        self.trainer.training_step(
-            reward,
-            agent,
-            learning_strategy,
-            termination_strategy,
-            self.last_action.clone(),
-        );
     }
 
     pub fn add_currency(&mut self, amount: f64) {
@@ -188,6 +180,7 @@ impl Company {
     }
 
     pub fn update_company_value(&mut self, market_data: &MarketData, processor_value: f64) -> f64 {
+        self.old_company_value = self.company_value;
         let mut new_company_value = self.currency;
         // Add value of all processors
         new_company_value += self.processors.len() as f64 * processor_value;
