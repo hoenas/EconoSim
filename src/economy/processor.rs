@@ -3,7 +3,7 @@ use crate::economy::stock::Stock;
 use crate::world_data::recipe_data::RecipeData;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Processor {
     pub name: String,
     pub production_speed: f64,

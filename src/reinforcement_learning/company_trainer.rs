@@ -12,7 +12,7 @@ use super::state::CompanyAction;
 /// training, the `AgentTrainer` contains learned knowledge about the process, and can be queried
 /// for this. For example, you can ask the `AgentTrainer` the expected values of all possible
 /// actions in a given state.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct CompanyTrainer {
     q: HashMap<CompanyState, HashMap<CompanyAction, f64>>,
     state: CompanyState,
@@ -64,7 +64,7 @@ impl CompanyTrainer {
             .map(|t| t.0.clone())
     }
 
-    pub fn action_step(
+    pub fn exploration_step(
         &mut self,
         state: CompanyState,
         agent: &mut dyn Agent<CompanyState>,

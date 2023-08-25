@@ -41,19 +41,3 @@ Potential features:
     - Currency influx
     - Currency
 
-# Reinforment Learning
-
-Observation Vector:
-
-- Price index
-- Order index
-- Stock
-- Currency
-- Production rates?
-
-Action Space:
-
-- Buy processor
-- Sell processor
-- Create order
-- Create offer

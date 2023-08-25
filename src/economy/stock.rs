@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::economy::resource::ResourceHandle;
 use crate::world_data::resource_data::ResourceData;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 
 pub struct Stock {
     pub resources: HashMap<ResourceHandle, f64>,

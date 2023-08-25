@@ -59,269 +59,8 @@ company_data:
             - 1000
           currency: 10000
           price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
             - 0
             - 0
-            - 15
-    - name: AI COMPANY 2
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
-            - 0
-            - 0
-            - 15
-    - name: AI COMPANY 3
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
-            - 0
-            - 0
-            - 15
-    - name: AI COMPANY 4
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
-            - 0
-            - 0
-            - 15
-    - name: AI COMPANY 5
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
-            - 0
-            - 0
-            - 15
-    - name: AI COMPANY 6
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
-            - 0
-            - 0
-            - 15
-    - name: AI COMPANY 7
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 0
-            - 0
-            - 0
-          order_index:
-            - 0
-            - 0
-            - 0
-    - name: AI COMPANY 8
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
-            - 0
-            - 0
-            - 15
-    - name: AI COMPANY 9
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
-            - 10
-          order_index:
-            - 0
-            - 0
-            - 15
-    - name: AI COMPANY 10
-      id: 0
-      stock:
-        resources:
-          0: 1000.0
-          1: 1000.0
-          2: 1000.0
-      currency: 10000.0
-      processors: []
-      orders: []
-      offers: []
-      company_value: 0.0
-      last_action: Nothing
-      trainer:
-        q: {}
-        state:
-          stock:
-            - 1000
-            - 1000
-            - 1000
-          currency: 10000
-          price_index:
-            - 99999999999
-            - 99999999999
             - 10
           order_index:
             - 0
@@ -342,4 +81,31 @@ market_data:
     2: [0, 15]
   offers: {}
   orders: {}
- 
+producer_data:
+  producers:
+    - production:
+      - resource: 0
+        amount: 10000.0
+        price_per_unit: 1.0
+        time_to_live: 100
+      - resource: 1
+        amount: 10000.0
+        price_per_unit: 1.0
+        time_to_live: 100
+      offers: []
+      offer_creation_ticks: 100
+      current_tick: 0
+consumer_data:
+  consumers:
+    - consumption:
+      - resource: 2
+        amount: 1000.0
+        max_price_per_unit: 10000.0
+        time_to_live: 100
+      - resource: 4
+        amount: 1000.0
+        max_price_per_unit: 10000.0
+        time_to_live: 100
+      orders: []
+      order_creation_ticks: 100
+      current_tick: 0
