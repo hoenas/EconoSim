@@ -41,14 +41,18 @@ impl DeepRLAgent {
         }
     }
 
+    pub fn get_output(network: &mut FeedForward, state: &[f64]) -> Vec<f64> {
+        network.calc(&state).iter().map(|x| *x).collect()
+    }
+
     pub fn train(&mut self, old_state: Vec<f64>, reward: f64, new_state: Vec<f64>) {
         // Example implementation
         // https://github.com/valohai/qlearning-simple/blob/master/deep_gambler.py
         // Ask the model for the Q values of the old state (inference)
-        let old_state_q_values = self.neural_network.calc(&old_state);
+        let mut old_state_q_values = DeepRLAgent::get_output(&mut self.neural_network, &old_state);
 
         // Ask the model for the Q values of the new state (inference)
-        let new_state_q_values = self.neural_network.calc(&new_state);
+        let mut new_state_q_values = DeepRLAgent::get_output(&mut self.neural_network, &new_state);
 
         // Real Q value for the action we took. This is what we will train towards.
         let max_index = self.get_next_state_action(new_state, 0.0);
@@ -56,6 +60,7 @@ impl DeepRLAgent {
             reward + self.discount * new_state_q_values[max_index];
 
         // Train
-        self.neural_network.fit(&old_state, new_state_q_values);
+        self.neural_network
+            .fit(&old_state, new_state_q_values.as_mut_slice());
     }
 }
