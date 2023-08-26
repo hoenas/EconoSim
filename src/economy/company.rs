@@ -25,7 +25,6 @@ pub struct Company {
     pub id: CompanyHandle,
     pub agent: DeepRLAgent,
     old_state: CompanyState,
-    last_action: CompanyAction,
     old_company_value: f64,
 }
 
@@ -49,7 +48,6 @@ impl Company {
             id: company_handle,
             agent: DeepRLAgent::new(state_dimensions, action_dimensions, discount),
             old_state: CompanyState::new(resource_count),
-            last_action: CompanyAction::Nothing,
             old_company_value: 0.0,
         }
     }

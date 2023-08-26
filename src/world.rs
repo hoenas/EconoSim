@@ -36,7 +36,7 @@ impl World {
             consumer_data: ConsumerData::new(),
             market_data: MarketData::new(),
             market_place: Marketplace::new(),
-            actionspace: ActionSpace::new(),
+            actionspace: ActionSpace::new(0),
         }
     }
 

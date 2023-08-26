@@ -4,14 +4,11 @@ mod persistence;
 mod reinforcement_learning;
 mod world;
 mod world_data;
-
 use format_num::NumberFormat;
 use log::info;
 use persistence::Persistence;
-use simple_logger::SimpleLogger;
 
 fn main() {
-    SimpleLogger::new().env().init().unwrap();
     info!("=== SIM TEST ===");
     let num = NumberFormat::new();
     let epoche_length = 100000;

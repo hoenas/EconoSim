@@ -15,7 +15,7 @@ pub struct ActionSpace {
 }
 
 impl ActionSpace {
-    pub fn new() -> ActionSpace {
+    pub fn new(resource_count: usize) -> ActionSpace {
         let mut actionspace: Vec<CompanyAction> = Vec::new();
         actionspace.push(CompanyAction::Nothing);
         for i in 0..2 {
@@ -24,7 +24,7 @@ impl ActionSpace {
         for i in 0..10 {
             actionspace.push(CompanyAction::SellProcessor(i));
         }
-        for i in 1..5 {
+        for i in 1..resource_count {
             for k in 0..10 {
                 let k_value = (2 as usize).pow(k);
                 actionspace.push(CompanyAction::BuyResource(i, 5, k_value));
