@@ -71,14 +71,24 @@ impl Company {
             price_index: market_data
                 .price_index
                 .values()
-                .filter(|x| x.is_some())
-                .map(|x: &Option<(usize, f64)>| x.unwrap().1 as usize)
+                .map(|x: &Option<(usize, f64)>| {
+                    if x.is_some() {
+                        x.unwrap().1 as usize
+                    } else {
+                         0
+                    }
+                    })
                 .collect(),
             order_index: market_data
                 .order_index
                 .values()
-                .filter(|x| x.is_some())
-                .map(|x| x.unwrap().1 as usize)
+                .map(|x: &Option<(usize, f64)>| {
+                    if x.is_some() {
+                        x.unwrap().1 as usize
+                    } else {
+                         0
+                    }
+                    })
                 .collect(),
         };
 

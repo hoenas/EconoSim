@@ -61,6 +61,6 @@ impl DeepRLAgent {
 
         // Train
         self.neural_network
-            .fit(&old_state, new_state_q_values.as_mut_slice());
+            .fit(&old_state, old_state_q_values.as_mut_slice());
     }
 }

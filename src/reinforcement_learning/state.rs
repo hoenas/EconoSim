@@ -15,33 +15,15 @@ pub struct CompanyState {
 }
 
 impl CompanyState {
-    fn actions(&self) -> Vec<CompanyAction> {
-        let mut actionspace: Vec<CompanyAction> = Vec::new();
-        actionspace.push(CompanyAction::Nothing);
-        for i in 0..2 {
-            actionspace.push(CompanyAction::BuyProcessor(i));
-        }
-        for i in 0..10 {
-            actionspace.push(CompanyAction::SellProcessor(i));
-        }
-        for i in 1..5 {
-            for k in 0..10 {
-                let k_value = (2 as usize).pow(k);
-                actionspace.push(CompanyAction::BuyResource(i, 5, k_value));
-                actionspace.push(CompanyAction::SellResource(i, 5, k_value));
-            }
-        }
-        actionspace
     }
-}
 
 impl CompanyState {
     pub fn new(resource_count: usize) -> CompanyState {
         CompanyState {
-            stock: vec![0; 100],
+            stock: (0..resource_count).map(|_| 0 as usize).collect(),
             currency: 0,
-            price_index: (0..resource_count).collect(),
-            order_index: (0..resource_count).collect(),
+            price_index: (0..resource_count).map(|_| 0 as usize).collect(),
+            order_index: (0..resource_count).map(|_| 0 as usize).collect(),
         }
     }
 
