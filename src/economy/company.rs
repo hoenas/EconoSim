@@ -92,6 +92,9 @@ impl Company {
                 .collect(),
         };
 
+        self.old_company_value = self.company_value;
+        self.company_value = self.calculate_company_value(market_data, processor_price);
+
         if train {
             self.agent.train(
                 self.old_state.as_f64_vec(),
@@ -187,8 +190,7 @@ impl Company {
         });
     }
 
-    pub fn update_company_value(&mut self, market_data: &MarketData, processor_value: f64) -> f64 {
-        self.old_company_value = self.company_value;
+    pub fn calculate_company_value(&self, market_data: &MarketData, processor_value: f64) -> f64 {
         let mut new_company_value = self.currency;
         // Add value of all processors
         new_company_value += self.processors.len() as f64 * processor_value;
@@ -226,8 +228,6 @@ impl Company {
                 }
             };
         }
-        let old_company_value = self.company_value;
-        self.company_value = new_company_value;
-        self.company_value - old_company_value
+        new_company_value
     }
 }

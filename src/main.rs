@@ -57,6 +57,6 @@ fn main() {
             }
         }
         // trained_world.print_world_info();
+        Persistence::write_world(&trained_world);
     }
-    Persistence::write_world(&trained_world);
 }
