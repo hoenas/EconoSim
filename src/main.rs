@@ -5,11 +5,12 @@ mod reinforcement_learning;
 mod world;
 mod world_data;
 use format_num::NumberFormat;
-use log::info;
 use persistence::Persistence;
+use simple_logger::SimpleLogger;
 
 fn main() {
-    info!("=== SIM TEST ===");
+    SimpleLogger::new().init().unwrap();
+    log::info!("=== SIM TEST ===");
     let num = NumberFormat::new();
     let epoche_length = 100000;
     // Load world
@@ -27,25 +28,25 @@ fn main() {
         .map(|company| company.company_value)
         .collect();
     for i in 0..1000 {
-        info!("Episode {i}");
+        log::info!("Episode {i}");
         for k in 0..epoche_length {
             if k % 10000 == 0 {
-                info!("Trainning progress: {k}");
+                log::info!("Trainning progress: {k}");
             }
             trained_world.tick(true, 1.0 / ((k + 1) as f64));
         }
 
         for k in 0..100000 {
             if k % 10000 == 0 {
-                info!("Simulation progress: {k}");
+                log::info!("Simulation progress: {k}");
             }
             trained_world.tick(false, 0.0);
         }
-        info!("Company value development:");
+        log::info!("Company value development:");
         for (i, company) in trained_world.company_data.companies.iter_mut().enumerate() {
             let delta = num.format(".4s", company.company_value - old_company_values[i]);
             let max_delta = num.format(".4s", company.company_value - max_company_values[i]);
-            info!(
+            log::info!(
                 "- {}:\t{}\t({delta})\t[{max_delta}]",
                 company.name,
                 num.format(".4s", company.company_value)

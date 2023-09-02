@@ -75,9 +75,9 @@ impl Company {
                     if x.is_some() {
                         x.unwrap().1 as usize
                     } else {
-                         0
+                        0
                     }
-                    })
+                })
                 .collect(),
             order_index: market_data
                 .order_index
@@ -86,9 +86,9 @@ impl Company {
                     if x.is_some() {
                         x.unwrap().1 as usize
                     } else {
-                         0
+                        0
                     }
-                    })
+                })
                 .collect(),
         };
 

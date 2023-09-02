@@ -14,8 +14,7 @@ pub struct CompanyState {
     pub order_index: Vec<usize>,
 }
 
-impl CompanyState {
-    }
+impl CompanyState {}
 
 impl CompanyState {
     pub fn new(resource_count: usize) -> CompanyState {
