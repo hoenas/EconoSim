@@ -24,7 +24,7 @@ pub struct Company {
     pub company_value: f64,
     pub id: CompanyHandle,
     pub agent: DeepRLAgent,
-    old_state: CompanyState,
+    pub old_state: CompanyState,
     old_company_value: f64,
 }
 

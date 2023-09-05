@@ -52,7 +52,7 @@ impl DeepRLAgent {
         let mut old_state_q_values = DeepRLAgent::get_output(&mut self.neural_network, &old_state);
 
         // Ask the model for the Q values of the new state (inference)
-        let mut new_state_q_values = DeepRLAgent::get_output(&mut self.neural_network, &new_state);
+        let new_state_q_values = DeepRLAgent::get_output(&mut self.neural_network, &new_state);
 
         // Real Q value for the action we took. This is what we will train towards.
         let max_index = self.get_next_state_action(new_state, 0.0);

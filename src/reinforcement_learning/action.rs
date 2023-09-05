@@ -15,10 +15,10 @@ pub struct ActionSpace {
 }
 
 impl ActionSpace {
-    pub fn new(resource_count: usize) -> ActionSpace {
+    pub fn new(resource_count: usize, recipe_count: usize) -> ActionSpace {
         let mut actionspace: Vec<CompanyAction> = Vec::new();
         actionspace.push(CompanyAction::Nothing);
-        for i in 0..2 {
+        for i in 0..recipe_count {
             actionspace.push(CompanyAction::BuyProcessor(i));
         }
         for i in 0..10 {

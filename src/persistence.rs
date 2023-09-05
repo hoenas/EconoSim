@@ -6,9 +6,13 @@ const TRAINED_WORLD_FILENAME: &str = "data/world.yml";
 pub struct Persistence {}
 
 impl Persistence {
-    pub fn load_prestine_world() -> World {
-        let infile = File::open(PRESTINE_WORLD_FILENAME).unwrap();
+    pub fn load_world_from(filename: &str) -> World {
+        let infile = File::open(filename).unwrap();
         return serde_yaml::from_reader(infile).unwrap();
+    }
+
+    pub fn load_prestine_world() -> World {
+        return Persistence::load_world_from(PRESTINE_WORLD_FILENAME);
     }
 
     pub fn load_trained_world() -> World {
@@ -17,7 +21,11 @@ impl Persistence {
     }
 
     pub fn write_world(world: &World) {
-        let outfile = File::create(TRAINED_WORLD_FILENAME).unwrap();
+        return Persistence::write_world_to(world, TRAINED_WORLD_FILENAME);
+    }
+
+    pub fn write_world_to(world: &World, filename: &str) {
+        let outfile = File::create(filename).unwrap();
         return serde_yaml::to_writer(outfile, world).unwrap();
     }
 }

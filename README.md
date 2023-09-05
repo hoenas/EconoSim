@@ -1,4 +1,4 @@
-# EconoSim
+# econo-sim
 
 Economy simulation written in Rust
 
@@ -40,4 +40,3 @@ Potential features:
     - Current production rate
     - Currency influx
     - Currency
-
