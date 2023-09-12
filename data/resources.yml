@@ -1,0 +1,8 @@
+---
+resource_data:
+  resources:
+    - name: Wood
+    - name: Clay
+    - name: Coal
+    - name: IronOre
+    - name: Iron

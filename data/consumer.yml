@@ -1,0 +1,15 @@
+---
+consumer_data:
+  consumers:
+    - consumption:
+        - resource: 2
+          amount: 1000.0
+          max_price_per_unit: 10000.0
+          time_to_live: 100
+        - resource: 4
+          amount: 1000.0
+          max_price_per_unit: 10000.0
+          time_to_live: 100
+      orders: []
+      order_creation_ticks: 100
+      current_tick: 0
