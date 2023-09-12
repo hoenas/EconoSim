@@ -1,6 +1,5 @@
 use clap::{arg, command, Parser};
 use econo_sim::persistence::Persistence;
-use econo_sim::visualization::{render_diagrams, CompanyTrainingData, CompanyTrainingDatapoint};
 use format_num::NumberFormat;
 use simple_logger::SimpleLogger;
 use std::time::Instant;
@@ -39,17 +38,6 @@ fn main() {
         .collect();
 
     for epoch in 0..1000 {
-        // Record trainig data
-        let mut training_data: Vec<CompanyTrainingData> = trained_world
-            .company_data
-            .companies
-            .iter()
-            .map(|x| CompanyTrainingData {
-                name: x.name.clone(),
-                data: Vec::new(),
-            })
-            .collect();
-
         for company in trained_world.company_data.companies.iter() {
             let mut processor_counts: Vec<usize> = (0..trained_world.recipe_data.recipes.len())
                 .map(|_| 0)
@@ -57,12 +45,6 @@ fn main() {
             for processor in &company.processors {
                 processor_counts[processor.recipe] += 1;
             }
-            training_data[epoch].data.push(CompanyTrainingDatapoint {
-                company_value: company.company_value,
-                currency: company.currency,
-                processor_counts: processor_counts,
-                stock: company.old_state.stock.clone(),
-            })
         }
         log::info!("Epoch {epoch}");
         // Reset starting conditions
@@ -113,16 +95,8 @@ fn main() {
             for processor in &company.processors {
                 processor_counts[processor.recipe] += 1;
             }
-            training_data[epoch].data.push(CompanyTrainingDatapoint {
-                company_value: company.company_value,
-                currency: company.currency,
-                processor_counts: processor_counts,
-                stock: company.old_state.stock.clone(),
-            })
         }
-        // trained_world.print_world_info();
         Persistence::write_world_to(&trained_world, &cli_args.out_file);
         log::info!("Storing diagram");
-        render_diagrams(training_data, epoch);
     }
 }

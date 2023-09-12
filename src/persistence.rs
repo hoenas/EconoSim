@@ -6,6 +6,15 @@ const TRAINED_WORLD_FILENAME: &str = "data/world.yml";
 pub struct Persistence {}
 
 impl Persistence {
+    pub fn load_from<T>(filename: &str) -> T
+    where
+        for<'de> T: serde::Deserialize<'de>,
+    {
+        log::info!("Loading {} from {}", std::any::type_name::<T>(), filename);
+        let infile = File::open(filename).unwrap();
+        return serde_yaml::from_reader(infile).unwrap();
+    }
+
     pub fn load_world_from(filename: &str) -> World {
         let infile = File::open(filename).unwrap();
         return serde_yaml::from_reader(infile).unwrap();

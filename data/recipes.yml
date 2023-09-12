@@ -1,23 +1,22 @@
 ---
-recipe_data:
-  recipes:
-    - name: Coal
-      ingredients:
-        - - 0
-          - 0.5
-        - - 1
-          - 0.7
-      products:
-        - - 2
-          - 0.2
-      production_speed: 0.5
-    - name: Iron
-      ingredients:
-        - - 2
-          - 1.0
-        - - 3
-          - 2.0
-      products:
-        - - 4
-          - 0.1
-      production_speed: 0.25
+recipes:
+  - name: Coal
+    ingredients:
+      - - 0
+        - 0.5
+      - - 1
+        - 0.7
+    products:
+      - - 2
+        - 0.2
+    production_speed: 0.5
+  - name: Iron
+    ingredients:
+      - - 2
+        - 1.0
+      - - 3
+        - 2.0
+    products:
+      - - 4
+        - 0.1
+    production_speed: 0.25

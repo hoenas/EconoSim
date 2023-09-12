@@ -1,17 +1,16 @@
 ---
-market_data:
-  offers: []
-  orders: []
-  price_index:
-    0: ~
-    1: ~
-    2: ~
-    3: ~
-    4: ~
-  order_index:
-    0: ~
-    1: ~
-    2: ~
-    3: ~
-    4: ~
-  resource_count: 5
+offers: {}
+orders: {}
+price_index:
+  0: ~
+  1: ~
+  2: ~
+  3: ~
+  4: ~
+order_index:
+  0: ~
+  1: ~
+  2: ~
+  3: ~
+  4: ~
+resource_count: 5
