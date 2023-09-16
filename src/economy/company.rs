@@ -98,7 +98,7 @@ impl Company {
         if train {
             self.agent.train(
                 self.old_state.as_f64_vec(),
-                self.company_value - self.old_company_value,
+                self.company_value - self.old_company_value - 1.0,
                 company_state.as_f64_vec(),
             );
         }

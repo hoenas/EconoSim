@@ -1,13 +1,21 @@
 ---
 consumers:
   - consumption:
-      - resource: 2
+      - resource: Coal
         amount: 1000.0
-        max_price_per_unit: 10000.0
+        max_price_per_unit: 8.0
         time_to_live: 100
-      - resource: 4
+      - resource: Pottery
         amount: 1000.0
-        max_price_per_unit: 10000.0
+        max_price_per_unit: 16.0
+        time_to_live: 100
+      - resource: Iron
+        amount: 1000.0
+        max_price_per_unit: 32.0
+        time_to_live: 100
+      - resource: Steel
+        amount: 1000.0
+        max_price_per_unit: 64.0
         time_to_live: 100
     orders: []
     order_creation_ticks: 100

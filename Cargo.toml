@@ -16,3 +16,4 @@ neuroflow = "0.2.0"
 rand = "0.8.5"
 clap = { version = "4.4.2", features = ["derive"] }
 plotters = "0.3.5"
+itertools = "0.11.0"

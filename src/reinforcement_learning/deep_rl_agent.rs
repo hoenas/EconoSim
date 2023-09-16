@@ -13,7 +13,12 @@ pub struct DeepRLAgent {
 
 impl DeepRLAgent {
     pub fn new(state_dimensions: i32, action_dimensions: i32, discount: f64) -> DeepRLAgent {
-        let mut neural_network = FeedForward::new(&[state_dimensions, 10, 10, action_dimensions]);
+        let mut neural_network = FeedForward::new(&[
+            state_dimensions,
+            state_dimensions,
+            state_dimensions,
+            action_dimensions,
+        ]);
         neural_network.learning_rate(0.1);
         neural_network.activation(Relu);
         DeepRLAgent {

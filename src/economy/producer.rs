@@ -4,14 +4,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct Producer {
-    production: Vec<UnprocessedOffer>,
+    pub production: Vec<UnprocessedOffer>,
     pub offers: Vec<UnprocessedOffer>,
-    offer_creation_ticks: usize,
-    current_tick: usize,
+    pub offer_creation_ticks: usize,
+    pub current_tick: usize,
 }
 
 impl Producer {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             production: vec![],
             offers: vec![],

@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct Consumer {
-    consumption: Vec<UnprocessedOrder>,
+    pub consumption: Vec<UnprocessedOrder>,
     pub orders: Vec<UnprocessedOrder>,
-    order_creation_ticks: usize,
-    current_tick: usize,
+    pub order_creation_ticks: usize,
+    pub current_tick: usize,
 }
 
 impl Consumer {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             consumption: vec![],
             orders: vec![],
