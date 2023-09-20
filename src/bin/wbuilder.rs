@@ -264,6 +264,8 @@ fn main() {
     world.producer_data = render_producer_data(cli_args.producer_file, &world.resource_data);
     // Load recipe data
     world.recipe_data = render_recipe_data(cli_args.recipes_file, &world.resource_data);
+    // Adjust resource count
+    world.market_data.resource_count = resource_count;
     // Load company starting conditions
     let company_starting_conditions = render_company_starting_conditions(
         cli_args.company_starting_conditions_file,
