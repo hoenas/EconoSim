@@ -1,0 +1,31 @@
+---
+recipes:
+  - name: Coal
+    ingredients:
+      Wood: 0.5
+      Clay: 0.7
+    products:
+      Coal: 0.2
+    production_speed: 1
+  - name: Iron
+    ingredients:
+      Coal: 1.0
+      IronOre: 2.0
+    products:
+      Iron: 0.1
+    production_speed: 1
+  - name: Steel
+    ingredients:
+      Coal: 2.0
+      Iron: 2.0
+    products:
+      Iron: 0.1
+    production_speed: 1
+  - name: Pottery
+    ingredients:
+      Coal: 3.0
+      Clay: 2.0
+      Water: 2.0
+    products:
+      Pottery: 0.5
+    production_speed: 1

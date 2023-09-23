@@ -1,0 +1,22 @@
+---
+producers:
+  - production:
+      - resource: Water
+        amount: 10000.0
+        price_per_unit: 1.0
+        time_to_live: 100
+      - resource: Wood
+        amount: 10000.0
+        price_per_unit: 1.0
+        time_to_live: 100
+      - resource: Clay
+        amount: 10000.0
+        price_per_unit: 1.0
+        time_to_live: 100
+      - resource: IronOre
+        amount: 10000.0
+        price_per_unit: 5.0
+        time_to_live: 100
+    offers: []
+    offer_creation_ticks: 100
+    current_tick: 0

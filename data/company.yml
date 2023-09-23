@@ -1,0 +1,7 @@
+stock:
+  resources:
+    Water: 100.0
+    Wood: 100.0
+    Clay: 100.0
+currency: 1000.0
+processors: []

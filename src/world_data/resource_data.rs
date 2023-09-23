@@ -1,6 +1,6 @@
 use crate::economy::resource::{Resource, ResourceHandle};
-
 use serde::{Deserialize, Serialize};
+use simple_logger::SimpleLogger;
 
 #[derive(Serialize, Deserialize)]
 pub struct ResourceData {
@@ -31,5 +31,15 @@ impl ResourceData {
         } else {
             None
         }
+    }
+
+    pub fn get_resource_handle_by_name(&self, resource_name: &str) -> Option<ResourceHandle> {
+        for (handle, resource) in self.resources.iter().enumerate() {
+            if resource.name == *resource_name {
+                return Some(handle);
+            }
+        }
+        log::error!("Resource '{}' not found!", resource_name);
+        None
     }
 }

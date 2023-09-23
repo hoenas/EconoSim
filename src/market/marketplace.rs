@@ -36,7 +36,7 @@ impl Marketplace {
         }
     }
 
-    fn get_cheapest_offer(
+    pub fn get_cheapest_offer(
         &self,
         resource: ResourceHandle,
         offers: &HashMap<OfferHandle, Offer>,
@@ -71,18 +71,34 @@ impl Marketplace {
         highest_order
     }
 
-    pub fn place_offer(&mut self, offer: Offer, market_data: &mut MarketData) -> OfferHandle {
+    pub fn place_offer(
+        &mut self,
+        offer: Offer,
+        market_data: &mut MarketData,
+    ) -> Option<OfferHandle> {
+        // Offer sanity checks
+        if offer.amount <= 0.0 || offer.resource >= market_data.resource_count {
+            return None;
+        }
         self.next_offer_id += 1;
         market_data.offers.insert(self.next_offer_id, offer);
         self.update_price_index(market_data);
-        self.next_offer_id
+        Some(self.next_offer_id)
     }
 
-    pub fn place_order(&mut self, order: Order, market_data: &mut MarketData) -> OfferHandle {
+    pub fn place_order(
+        &mut self,
+        order: Order,
+        market_data: &mut MarketData,
+    ) -> Option<OfferHandle> {
+        // Order sanity checks
+        if order.amount <= 0.0 || order.resource >= market_data.resource_count {
+            return None;
+        }
         self.next_order_id += 1;
         market_data.orders.insert(self.next_order_id, order);
         self.update_order_index(market_data);
-        self.next_order_id
+        Some(self.next_order_id)
     }
 
     pub fn get_offer_by_handle(
@@ -116,23 +132,53 @@ impl Marketplace {
                                     if offer.amount < order.amount {
                                         // Consume offer
                                         order.amount -= offer.amount;
-                                        // Give resources to company
-                                        companies[order.company]
-                                            .stock
-                                            .add_to_stock(order.resource, offer.amount);
-                                        // Pay out offering company
-                                        companies[offer.company]
-                                            .add_currency(offer.amount * offer.price_per_unit);
+                                        // Check if the order was created by a real company
+                                        match order.company {
+                                            // Give resources to company
+                                            Some(company) => {
+                                                companies[company]
+                                                    .stock
+                                                    .add_to_stock(order.resource, offer.amount);
+                                                // Give delta currency from max price back
+                                                let price_delta = (order.max_price_per_unit
+                                                    - offer.price_per_unit)
+                                                    * offer.amount;
+                                                companies[company].add_currency(price_delta);
+                                                // Pay out offering company
+                                                companies[company].add_currency(
+                                                    offer.amount * offer.price_per_unit,
+                                                );
+                                            }
+                                            None => {
+                                                // The order was created by a producer
+                                                // No one to add resources to and remove currency from
+                                            }
+                                        }
+
                                         // We consumed the hole amount of the offer and must therefore remove it from the market
                                         market_data.offers.remove(&offer_handle);
                                     } else {
-                                        // Give resources to ordering company
-                                        companies[order.company]
-                                            .stock
-                                            .add_to_stock(order.resource, order.amount);
-                                        // Pay out offering company
-                                        companies[offer.company]
-                                            .add_currency(offer.amount * order.amount);
+                                        // Check if the order was created by a real company
+                                        match order.company {
+                                            Some(company) => {
+                                                // Give resources to ordering company
+                                                companies[company]
+                                                    .stock
+                                                    .add_to_stock(order.resource, order.amount);
+                                                // Give delta currency from max price back
+                                                let price_delta = (order.max_price_per_unit
+                                                    - offer.price_per_unit)
+                                                    * order.amount;
+                                                companies[company].add_currency(price_delta);
+                                                // Pay out offering company
+                                                companies[company]
+                                                    .add_currency(offer.amount * order.amount);
+                                            }
+                                            None => {
+                                                // The order was created by a producer
+                                                // No one to add resources to and remove currency from
+                                            }
+                                        }
                                         // Reduce offer and order amount
                                         offer.amount -= order.amount;
                                         order.amount = 0.0;
@@ -154,7 +200,7 @@ impl Marketplace {
         }
     }
 
-    fn cleanup_orders(&self, market_data: &mut MarketData) {
+    fn cleanup_complete_orders(&self, market_data: &mut MarketData) {
         let mut complete_orders: Vec<OrderHandle> = vec![];
         for (order_handle, order) in market_data.orders.iter() {
             if order.amount <= 0.0 {
@@ -166,9 +212,56 @@ impl Marketplace {
         }
     }
 
+    fn cleanup_dead_orders(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
+        let mut complete_orders: Vec<OrderHandle> = vec![];
+        for (order_handle, order) in market_data.orders.iter_mut() {
+            order.time_to_live -= 1;
+            if order.time_to_live > 0 {
+                continue;
+            }
+            // Pay back ordering company
+            match order.company {
+                Some(company) => {
+                    companies[company].add_currency(order.max_price_per_unit * order.amount);
+                }
+                None => {}
+            }
+            complete_orders.push(*order_handle);
+        }
+        for order_handle in complete_orders {
+            market_data.orders.remove(&order_handle);
+        }
+    }
+
+    fn cleanup_dead_offers(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
+        let mut complete_offers: Vec<OrderHandle> = vec![];
+        for (offer_handle, offer) in market_data.offers.iter_mut() {
+            offer.time_to_live -= 1;
+            if offer.time_to_live > 0 {
+                continue;
+            }
+            // Give back resources to offering company
+            match offer.company {
+                Some(company) => {
+                    companies[company]
+                        .stock
+                        .add_to_stock(offer.resource, offer.amount);
+                }
+                None => {}
+            }
+            complete_offers.push(*offer_handle);
+        }
+
+        for order_handle in complete_offers {
+            market_data.offers.remove(&order_handle);
+        }
+    }
+
     pub fn tick(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
         self.execute_orders(market_data, companies);
-        self.cleanup_orders(market_data);
+        self.cleanup_complete_orders(market_data);
+        self.cleanup_dead_orders(market_data, companies);
+        self.cleanup_dead_offers(market_data, companies);
         self.update_order_index(market_data);
     }
 }

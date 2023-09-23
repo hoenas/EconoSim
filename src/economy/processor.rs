@@ -3,7 +3,7 @@ use crate::economy::stock::Stock;
 use crate::world_data::recipe_data::RecipeData;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Processor {
     pub name: String,
     pub production_speed: f64,
@@ -16,7 +16,8 @@ impl<'a> Processor {
         // Get recipe
         let recipe = recipe_data.get_recipe_by_handle(self.recipe).unwrap();
         // Check if transaction can be done
-        if self.productive && stock.make_transaction(&recipe.ingredients) {
+        let transaction = &recipe.ingredients.iter().map(|x| (*x.0, *x.1)).collect();
+        if self.productive && stock.make_transaction(transaction) {
             // Transaction can be done, add generated resources to stock
             for (resource, production_factor) in recipe.products.iter() {
                 let amount = production_factor * self.production_speed;
