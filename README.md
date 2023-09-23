@@ -8,7 +8,9 @@ Economy simulation written in Rust
 graph TD;
     World -- owns --> Company
     World -- owns --> Marketplace
-    Marketplace-- holds -->Offer
+    Marketplace -- holds -->Offer
+    Producer -- produces -->Offer
+    Consumer -- consumes -->Offer
     Company -- places offer -->Marketplace
     Company -- accepts offer -->Marketplace
     Company -- owns -->Processor
