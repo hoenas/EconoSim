@@ -9,10 +9,11 @@ graph TD;
     World -- owns --> Company
     World -- owns --> Marketplace
     Marketplace -- holds -->Offer
-    Producer -- produces -->Offer
-    Consumer -- consumes -->Offer
-    Company -- places offer -->Marketplace
-    Company -- accepts offer -->Marketplace
+    Marketplace -- holds -->Order
+    Producer -- creates -->Offer
+    Consumer -- creates -->Order
+    Company -- places -->Offer
+    Company -- places -->Order
     Company -- owns -->Processor
     Company -- owns --> Resource
     Processor -- produces --> Resource
