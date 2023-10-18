@@ -13,14 +13,26 @@ struct Args {
     /// Path to save trained world to
     #[arg(short, long, default_value_t = String::from("data/trained_world.yml"))]
     out_file: String,
+    /// Epochs to train
+    #[arg(short, long, default_value_t = 10000)]
+    epochs: usize,
+    /// Epochs where the world is saved to the output file
+    #[arg(short, long, default_value_t = 100)]
+    save_epochs: usize,
+    /// Epochs where a test simulation without learning is done
+    #[arg(short, long, default_value_t = 100)]
+    sim_epochs: usize,
+    /// Ticks simulate without training
+    #[arg(short, long, default_value_t = 1000)]
+    sim_ticks: usize,
 }
 
 fn main() {
     let cli_args = Args::parse();
     SimpleLogger::new().init().unwrap();
-    log::info!("=== SIM TEST ===");
+    log::info!("=== TRAINING ===");
     let num = NumberFormat::new();
-    let epochs = 100000;
+    let epochs: i32 = 100000;
     // Load world
     let prestine_world = Persistence::load_world_from(&cli_args.in_file);
     let mut trained_world = Persistence::load_world_from(&cli_args.in_file);
@@ -37,7 +49,7 @@ fn main() {
         .map(|company| company.company_value)
         .collect();
 
-    for epoch in 0..epochs {
+    for epoch in 0..cli_args.epochs {
         for company in trained_world.company_data.companies.iter() {
             let mut processor_counts: Vec<usize> = (0..trained_world.recipe_data.recipes.len())
                 .map(|_| 0)
@@ -64,10 +76,10 @@ fn main() {
         }
         let mut fps = num.format(".4s", (epoch + 1) as f64 / start.elapsed().as_secs_f64());
         log::info!("Trained with {} ticks/s", fps);
-        if epoch % 10 == 0 {
+        if epoch % cli_args.sim_epochs == 0 {
             log::info!("Simulating...");
             start = Instant::now();
-            for k in 0..epoch + 1 {
+            for k in 0..cli_args.sim_ticks {
                 trained_world.tick(false, 0.0);
             }
             fps = num.format(".4s", (epoch + 1) as f64 / start.elapsed().as_secs_f64());
@@ -87,6 +99,9 @@ fn main() {
                 }
             }
         }
-        Persistence::write_world_to(&trained_world, &cli_args.out_file);
+        if epoch % cli_args.save_epochs == 0 {
+            log::info!("Saving world...");
+            Persistence::write_world_to(&trained_world, &cli_args.out_file);
+        }
     }
 }
