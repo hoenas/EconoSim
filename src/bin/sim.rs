@@ -29,8 +29,9 @@ fn main() {
     let num = NumberFormat::new();
     let epochs: i32 = 100000;
     // Caclulate time per tick limit
-    let tick_duration = Duration::from_millis((1000.0 / cli_args.fps_limit as f64) as u64);
+    let mut tick_duration = Duration::from_secs(0);
     if cli_args.fps_limit > 0 {
+        tick_duration = Duration::from_millis((1000.0 / cli_args.fps_limit as f64) as u64);
         log::info!(
             "Limiting simulation tickrate to {} ticks/s ({}ms per tick)",
             cli_args.fps_limit,

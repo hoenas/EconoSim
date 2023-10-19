@@ -2,6 +2,8 @@ use clap::{arg, command, Parser};
 use econo_sim::persistence::Persistence;
 use format_num::NumberFormat;
 use simple_logger::SimpleLogger;
+use std::io::stdout;
+use std::io::Write;
 use std::time::Instant;
 
 #[derive(Parser, Debug)]
@@ -16,14 +18,17 @@ struct Args {
     /// Epochs to train
     #[arg(short, long, default_value_t = 10000)]
     epochs: usize,
+    /// Ticks simulate with training
+    #[arg(short, long, default_value_t = 10000)]
+    training_ticks: usize,
     /// Epochs where the world is saved to the output file
-    #[arg(short, long, default_value_t = 100)]
+    #[arg(short, long, default_value_t = 10)]
     save_epochs: usize,
     /// Epochs where a test simulation without learning is done
-    #[arg(short, long, default_value_t = 100)]
+    #[arg(short, long, default_value_t = 10)]
     sim_epochs: usize,
     /// Ticks simulate without training
-    #[arg(short, long, default_value_t = 1000)]
+    #[arg(short, long, default_value_t = 10000)]
     sim_ticks: usize,
 }
 
@@ -32,7 +37,6 @@ fn main() {
     SimpleLogger::new().init().unwrap();
     log::info!("=== TRAINING ===");
     let num = NumberFormat::new();
-    let epochs: i32 = 100000;
     // Load world
     let prestine_world = Persistence::load_world_from(&cli_args.in_file);
     let mut trained_world = Persistence::load_world_from(&cli_args.in_file);
@@ -68,21 +72,34 @@ fn main() {
             company.processors = reference_company.processors.clone();
         }
         let mut start = Instant::now();
-        for k in 0..epoch + 1 {
-            if k % 1000 == 0 {
-                log::info!("Trainning progress: {k}");
+        for k in 0..cli_args.training_ticks {
+            if k % (cli_args.training_ticks / 100) == 0 {
+                print!(".");
+                stdout().flush().unwrap();
             }
             trained_world.tick(true, k as f64 / (epoch + 1) as f64);
         }
-        let mut fps = num.format(".4s", (epoch + 1) as f64 / start.elapsed().as_secs_f64());
+        println!();
+        let mut fps = num.format(
+            ".4s",
+            cli_args.training_ticks as f64 / start.elapsed().as_secs_f64(),
+        );
         log::info!("Trained with {} ticks/s", fps);
         if epoch % cli_args.sim_epochs == 0 {
             log::info!("Simulating...");
             start = Instant::now();
             for k in 0..cli_args.sim_ticks {
+                if k % (cli_args.sim_ticks / 100) == 0 {
+                    print!(".");
+                    stdout().flush().unwrap();
+                }
                 trained_world.tick(false, 0.0);
             }
-            fps = num.format(".4s", (epoch + 1) as f64 / start.elapsed().as_secs_f64());
+            println!();
+            fps = num.format(
+                ".4s",
+                cli_args.sim_ticks as f64 / start.elapsed().as_secs_f64(),
+            );
             log::info!("Simulated with {} ticks/s", fps);
             log::info!("Company value development:");
             for (i, company) in trained_world.company_data.companies.iter_mut().enumerate() {
