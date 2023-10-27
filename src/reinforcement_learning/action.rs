@@ -21,7 +21,7 @@ impl ActionSpace {
         for i in 0..recipe_count {
             actionspace.push(CompanyAction::BuyProcessor(i));
         }
-        for i in 0..10 {
+        for i in 0..recipe_count {
             actionspace.push(CompanyAction::SellProcessor(i));
         }
         for i in 1..resource_count {

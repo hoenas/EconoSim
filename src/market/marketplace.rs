@@ -135,23 +135,32 @@ impl Marketplace {
                                         // Check if the order was created by a real company
                                         match order.company {
                                             // Give resources to company
-                                            Some(company) => {
-                                                companies[company]
+                                            Some(ordering_company) => {
+                                                companies[ordering_company]
                                                     .stock
                                                     .add_to_stock(order.resource, offer.amount);
                                                 // Give delta currency from max price back
                                                 let price_delta = (order.max_price_per_unit
                                                     - offer.price_per_unit)
                                                     * offer.amount;
-                                                companies[company].add_currency(price_delta);
-                                                // Pay out offering company
-                                                companies[company].add_currency(
-                                                    offer.amount * offer.price_per_unit,
-                                                );
+                                                companies[ordering_company]
+                                                    .add_currency(price_delta);
+                                                // Pay out offering company if it exists
+                                                match offer.company {
+                                                    Some(offering_company) => {
+                                                        companies[offering_company].add_currency(
+                                                            offer.price_per_unit * offer.amount,
+                                                        );
+                                                    }
+                                                    None => {
+                                                        // Offer was created by a producer
+                                                        // No company to add currency to
+                                                    }
+                                                }
                                             }
                                             None => {
-                                                // The order was created by a producer
-                                                // No one to add resources to and remove currency from
+                                                // Order was created by a consumer
+                                                // No company to add resources to and remove currency from
                                             }
                                         }
 
@@ -160,23 +169,33 @@ impl Marketplace {
                                     } else {
                                         // Check if the order was created by a real company
                                         match order.company {
-                                            Some(company) => {
+                                            Some(ordering_company) => {
                                                 // Give resources to ordering company
-                                                companies[company]
+                                                companies[ordering_company]
                                                     .stock
                                                     .add_to_stock(order.resource, order.amount);
                                                 // Give delta currency from max price back
                                                 let price_delta = (order.max_price_per_unit
                                                     - offer.price_per_unit)
                                                     * order.amount;
-                                                companies[company].add_currency(price_delta);
-                                                // Pay out offering company
-                                                companies[company]
-                                                    .add_currency(offer.amount * order.amount);
+                                                companies[ordering_company]
+                                                    .add_currency(price_delta);
+                                                // Pay out offering company if it exists
+                                                match offer.company {
+                                                    Some(offering_company) => {
+                                                        companies[offering_company].add_currency(
+                                                            offer.price_per_unit * order.amount,
+                                                        );
+                                                    }
+                                                    None => {
+                                                        // Offer was created by a producer
+                                                        // No company to add currency to
+                                                    }
+                                                }
                                             }
                                             None => {
-                                                // The order was created by a producer
-                                                // No one to add resources to and remove currency from
+                                                // Order was created by a consumer
+                                                // No company to add resources to and remove currency from
                                             }
                                         }
                                         // Reduce offer and order amount

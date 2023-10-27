@@ -5,7 +5,6 @@ use econo_sim::economy::processor::Processor;
 use econo_sim::economy::producer::Producer;
 use econo_sim::economy::recipe::Recipe;
 use econo_sim::economy::stock::Stock;
-use econo_sim::economy::{company, resource};
 use econo_sim::market::marketplace::Marketplace;
 use econo_sim::market::offer::UnprocessedOffer;
 use econo_sim::market::order::UnprocessedOrder;
@@ -18,7 +17,6 @@ use econo_sim::world_data::market_data::MarketData;
 use econo_sim::world_data::producer_data::ProducerData;
 use econo_sim::world_data::recipe_data::RecipeData;
 use econo_sim::world_data::resource_data::ResourceData;
-use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
@@ -314,5 +312,7 @@ fn main() {
     }
     world.company_data.companies = companies;
     // Save world
+    log::info!("Saving world to '{}'...", &cli_args.out_file);
     Persistence::write_world_to(&world, &cli_args.out_file);
+    log::info!("Done.");
 }

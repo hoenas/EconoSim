@@ -25,7 +25,7 @@ pub struct Company {
     pub id: CompanyHandle,
     pub agent: DeepRLAgent,
     pub old_state: CompanyState,
-    old_company_value: f64,
+    pub old_company_value: f64,
 }
 
 impl Company {
@@ -61,8 +61,13 @@ impl Company {
         train: bool,
         exploration_factor: f64,
     ) {
-        for processor in self.processors.iter() {
+        let mut reward = 0.0;
+        for processor in self.processors.iter_mut() {
             processor.tick(&mut self.stock, recipe_data);
+            // Add reward for every processor that produced last tick
+            if processor.produced_last_tick {
+                reward += 1.0;
+            }
         }
         // Construct company state
         let company_state = CompanyState {
@@ -95,10 +100,18 @@ impl Company {
         self.old_company_value = self.company_value;
         self.company_value = self.calculate_company_value(market_data, processor_price);
 
+        // Reward for increase in company value
+        if self.company_value > self.old_company_value {
+            reward += self.company_value - self.old_company_value;
+        }
+        // If reward is still 0, make it negative
+        if reward == 0.0 {
+            reward = -5.0;
+        }
         if train {
             self.agent.train(
                 self.old_state.as_f64_vec(),
-                self.company_value - self.old_company_value - 1.0,
+                reward,
                 company_state.as_f64_vec(),
             );
         }
@@ -117,8 +130,14 @@ impl Company {
                 }
                 self.buy_processor(recipe, processor_price, &recipe_data);
             }
-            CompanyAction::SellProcessor(processor) => {
-                self.sell_processor(processor, processor_price);
+            CompanyAction::SellProcessor(recipe) => {
+                // Search for processor with given recipe
+                for (processor_handle, processor) in self.processors.iter().enumerate() {
+                    if processor.recipe == recipe {
+                        self.sell_processor(processor_handle, processor_price);
+                        return;
+                    }
+                }
             }
             CompanyAction::BuyResource(resource, amount, max_price) => {
                 self.place_order(resource, amount as f64, max_price as f64);
@@ -160,6 +179,7 @@ impl Company {
             production_speed: 1.0,
             recipe: recipe,
             productive: true,
+            produced_last_tick: false,
         };
         self.processors.push(proc);
     }

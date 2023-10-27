@@ -176,16 +176,18 @@ impl World {
                     continue;
                 }
                 company.currency -= order_price;
-                self.market_place.place_order(
-                    Order {
-                        resource: order.resource,
-                        amount: order.amount,
-                        max_price_per_unit: order.max_price_per_unit,
-                        company: Some(company_handle),
-                        time_to_live: order.time_to_live,
-                    },
-                    &mut self.market_data,
-                );
+                self.market_place
+                    .place_order(
+                        Order {
+                            resource: order.resource,
+                            amount: order.amount,
+                            max_price_per_unit: order.max_price_per_unit,
+                            company: Some(company_handle),
+                            time_to_live: order.time_to_live,
+                        },
+                        &mut self.market_data,
+                    )
+                    .unwrap();
             }
             company.orders.clear();
         }

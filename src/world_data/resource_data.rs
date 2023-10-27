@@ -1,6 +1,5 @@
 use crate::economy::resource::{Resource, ResourceHandle};
 use serde::{Deserialize, Serialize};
-use simple_logger::SimpleLogger;
 
 #[derive(Serialize, Deserialize)]
 pub struct ResourceData {

@@ -1,6 +1,5 @@
 use clap::{arg, command, Parser};
 use econo_sim::persistence::Persistence;
-use format_num::NumberFormat;
 use simple_logger::SimpleLogger;
 use std::time::Duration;
 use std::time::Instant;
@@ -24,10 +23,9 @@ struct Args {
 
 fn main() {
     let cli_args = Args::parse();
+    let info_ticks = std::cmp::max(1, cli_args.info_ticks);
     SimpleLogger::new().init().unwrap();
     log::info!("=== SIMULATION ===");
-    let num = NumberFormat::new();
-    let epochs: i32 = 100000;
     // Caclulate time per tick limit
     let mut tick_duration = Duration::from_secs(0);
     if cli_args.fps_limit > 0 {
@@ -48,7 +46,7 @@ fn main() {
 
         trained_world.tick(false, 0.0);
         ticks += 1;
-        if ticks % cli_args.info_ticks == 0 {
+        if ticks % info_ticks == 0 {
             trained_world.print_world_info();
         }
         if start.elapsed() < tick_duration {
