@@ -1,6 +1,7 @@
 use neuroflow::activators::Type::Relu;
 use neuroflow::FeedForward;
 use rand::prelude::*;
+use rurel::strategy::learn::q;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -14,8 +15,8 @@ pub struct DeepRLAgent {
 impl DeepRLAgent {
     pub fn new(state_dimensions: i32, action_dimensions: i32, discount: f64) -> DeepRLAgent {
         let mut neural_network =
-            FeedForward::new(&[state_dimensions, action_dimensions, action_dimensions]);
-        neural_network.learning_rate(0.1);
+            FeedForward::new(&[state_dimensions, 2 * action_dimensions, action_dimensions]);
+        neural_network.learning_rate(0.5);
         neural_network.activation(Relu);
         DeepRLAgent {
             neural_network: neural_network,
@@ -27,7 +28,7 @@ impl DeepRLAgent {
 
     pub fn get_next_state_action(&mut self, state: Vec<f64>, exploration_factor: f64) -> usize {
         let mut rng = rand::thread_rng();
-        if exploration_factor > rng.gen() {
+        if exploration_factor > rng.gen::<f64>() {
             rng.next_u64() as usize % self.action_dimensions
         } else {
             let index_of_max: Option<usize> = self
@@ -56,9 +57,13 @@ impl DeepRLAgent {
         let new_state_q_values = DeepRLAgent::get_output(&mut self.neural_network, &new_state);
 
         // Real Q value for the action we took. This is what we will train towards.
-        let max_index = self.get_next_state_action(new_state, 0.0);
-        old_state_q_values[self.last_action] =
-            reward + self.discount * new_state_q_values[max_index];
+        let max = new_state_q_values
+            .iter()
+            .enumerate()
+            .max_by(|(_, a), (_, b)| a.total_cmp(b))
+            .map(|(_, max)| max)
+            .unwrap();
+        old_state_q_values[self.last_action] = reward + self.discount * max;
 
         // Train
         self.neural_network
