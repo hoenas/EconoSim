@@ -34,6 +34,9 @@ struct Args {
     /// Ticks simulate without training
     #[arg(long, default_value_t = 10000)]
     sim_ticks: usize,
+    /// Exploration factor
+    #[arg(long, default_value_t = 0.05)]
+    exploration_factor: f64,
 }
 
 fn main() {
@@ -85,7 +88,7 @@ fn main() {
                 print!(".");
                 stdout().flush().unwrap();
             }
-            trained_world.tick(true, k as f64 / training_ticks as f64);
+            trained_world.tick(true, cli_args.exploration_factor);
         }
         println!();
         let mut fps = num.format(".4s", training_ticks as f64 / start.elapsed().as_secs_f64());
