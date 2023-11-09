@@ -293,7 +293,9 @@ fn main() {
                 resource_count,
                 statespace_dimensions as i32,
                 actionspace_dimensions as i32,
-                0.5,
+                0.97,
+                99,
+                100,
             )
         })
         .map(|mut x| {

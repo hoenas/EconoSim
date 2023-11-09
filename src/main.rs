@@ -88,7 +88,7 @@ fn main() {
                 print!(".");
                 stdout().flush().unwrap();
             }
-            trained_world.tick(true, cli_args.exploration_factor);
+            trained_world.tick(true, cli_args.exploration_factor, k);
         }
         println!();
         let mut fps = num.format(".4s", training_ticks as f64 / start.elapsed().as_secs_f64());
@@ -101,7 +101,7 @@ fn main() {
                     print!(".");
                     stdout().flush().unwrap();
                 }
-                trained_world.tick(false, 0.0);
+                trained_world.tick(false, 0.0, k);
             }
             println!();
             fps = num.format(".4s", sim_ticks as f64 / start.elapsed().as_secs_f64());

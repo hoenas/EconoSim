@@ -40,6 +40,8 @@ impl Company {
         state_dimensions: i32,
         action_dimensions: i32,
         discount: f64,
+        experience_replay_steps: usize,
+        experience_buffer_length: usize,
     ) -> Self {
         Company {
             name: name.to_string(),
@@ -50,7 +52,13 @@ impl Company {
             offers: vec![],
             company_value: 0.0,
             id: company_handle,
-            agent: DeepRLAgent::new(state_dimensions, action_dimensions, discount),
+            agent: DeepRLAgent::new(
+                state_dimensions,
+                action_dimensions,
+                discount,
+                experience_replay_steps,
+                experience_buffer_length,
+            ),
             old_state: CompanyState::new(resource_count),
             old_company_value: 0.0,
         }
@@ -64,6 +72,7 @@ impl Company {
         actionspace: &ActionSpace,
         train: bool,
         exploration_factor: f64,
+        ticks: usize,
     ) {
         let mut production_rates: Vec<usize> = vec![0; self.old_state.production_rates.len()];
         for processor in self.processors.iter_mut() {
@@ -112,8 +121,9 @@ impl Company {
         if train {
             self.agent.train(
                 self.old_state.as_f64_vec(),
-                self.company_value - self.old_company_value,
+                self.company_value - self.old_company_value - 1.0,
                 company_state.as_f64_vec(),
+                ticks,
             );
         }
         let action = self
@@ -122,9 +132,9 @@ impl Company {
         self.old_state = company_state;
         // Act according to agent decision
         match actionspace.actions[action] {
-            CompanyAction::Nothing => {
-                // do nothing
-            }
+            // CompanyAction::Nothing => {
+            //     // do nothing
+            // }
             CompanyAction::BuyProcessor(recipe) => {
                 if recipe_data.recipes.len() <= recipe {
                     return;

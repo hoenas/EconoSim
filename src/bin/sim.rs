@@ -44,7 +44,7 @@ fn main() {
     loop {
         let start = Instant::now();
 
-        trained_world.tick(false, 0.0);
+        trained_world.tick(false, 0.0, ticks);
         ticks += 1;
         if ticks % info_ticks == 0 {
             trained_world.print_world_info();

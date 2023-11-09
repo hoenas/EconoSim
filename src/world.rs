@@ -138,7 +138,7 @@ impl World {
         }
     }
 
-    fn update_companies(&mut self, train: bool, exploration_factor: f64) {
+    fn update_companies(&mut self, train: bool, exploration_factor: f64, ticks: usize) {
         // TODO: Shuffle iterator in order to avoid bias
         for (company_handle, company) in self.company_data.companies.iter_mut().enumerate() {
             company.tick(
@@ -148,6 +148,7 @@ impl World {
                 &self.actionspace,
                 train,
                 exploration_factor,
+                ticks,
             );
             // Create offers
             for offer in company.offers.iter_mut() {
@@ -193,13 +194,13 @@ impl World {
         }
     }
 
-    pub fn tick(&mut self, train: bool, exploration_factor: f64) {
+    pub fn tick(&mut self, train: bool, exploration_factor: f64, ticks: usize) {
         // Update producers
         self.update_producers();
         // Update consumers
         self.update_consumers();
         // Update companies
-        self.update_companies(train, exploration_factor);
+        self.update_companies(train, exploration_factor, ticks);
         // Update market
         self.market_place
             .tick(&mut self.market_data, &mut self.company_data.companies);
