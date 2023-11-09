@@ -1,3 +1,5 @@
+use std::vec;
+
 use crate::economy::processor::Processor;
 use crate::economy::recipe::RecipeHandle;
 use crate::economy::resource::ResourceHandle;
@@ -10,6 +12,8 @@ use crate::reinforcement_learning::deep_rl_agent::DeepRLAgent;
 use crate::reinforcement_learning::state::CompanyState;
 use crate::world_data::market_data::MarketData;
 use crate::world_data::recipe_data::RecipeData;
+use crate::world_data::resource_data;
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 pub type CompanyHandle = usize;
 
@@ -61,12 +65,16 @@ impl Company {
         train: bool,
         exploration_factor: f64,
     ) {
-        let mut reward = 0.0;
+        let mut production_rates: Vec<usize> = vec![0; self.old_state.production_rates.len()];
         for processor in self.processors.iter_mut() {
             processor.tick(&mut self.stock, recipe_data);
-            // Add reward for every processor that produced last tick
             if processor.produced_last_tick {
-                reward += 1.0;
+                let recipe = recipe_data.get_recipe_by_handle(processor.recipe).unwrap();
+                for (resource, amount) in recipe.products.iter() {
+                    let total = (amount * processor.production_speed) as usize
+                        + production_rates.get(*resource).unwrap();
+                    production_rates[*resource] = total;
+                }
             }
         }
         // Construct company state
@@ -95,23 +103,16 @@ impl Company {
                     }
                 })
                 .collect(),
+            production_rates: production_rates,
         };
 
         self.old_company_value = self.company_value;
         self.company_value = self.calculate_company_value(market_data, processor_price);
 
-        // Reward for increase in company value
-        if self.company_value > self.old_company_value {
-            reward += self.company_value - self.old_company_value;
-        }
-        // If reward is still 0, make it negative
-        if reward == 0.0 {
-            reward = -5.0;
-        }
         if train {
             self.agent.train(
                 self.old_state.as_f64_vec(),
-                reward,
+                self.company_value - self.old_company_value,
                 company_state.as_f64_vec(),
             );
         }
@@ -213,41 +214,41 @@ impl Company {
     pub fn calculate_company_value(&self, market_data: &MarketData, processor_value: f64) -> f64 {
         let mut new_company_value = self.currency;
         // Add value of all processors
-        new_company_value += self.processors.len() as f64 * processor_value;
-        // Add stockpile value
-        for (resource, amount) in self.stock.resources.iter() {
-            if market_data.price_index.contains_key(resource) {
-                match market_data.price_index[resource] {
-                    Some((_, price)) => {
-                        new_company_value += *amount * price;
-                    }
-                    None => {
-                        continue;
-                    }
-                };
-            }
-        }
-        // Add companies offers current value
-        for offer in market_data.offers.values() {
-            match offer.company {
-                Some(company) => {
-                    if company != self.id {
-                        continue;
-                    }
-                }
-                None => {
-                    continue;
-                }
-            }
-            match market_data.price_index[&offer.resource] {
-                Some((_, price)) => {
-                    new_company_value += offer.amount * price;
-                }
-                None => {
-                    break;
-                }
-            };
-        }
+        // new_company_value += self.processors.len() as f64 * processor_value;
+        // // Add stockpile value
+        // for (resource, amount) in self.stock.resources.iter() {
+        //     if market_data.price_index.contains_key(resource) {
+        //         match market_data.price_index[resource] {
+        //             Some((_, price)) => {
+        //                 new_company_value += *amount * price;
+        //             }
+        //             None => {
+        //                 continue;
+        //             }
+        //         };
+        //     }
+        // }
+        // // Add companies offers current value
+        // for offer in market_data.offers.values() {
+        //     match offer.company {
+        //         Some(company) => {
+        //             if company != self.id {
+        //                 continue;
+        //             }
+        //         }
+        //         None => {
+        //             continue;
+        //         }
+        //     }
+        //     match market_data.price_index[&offer.resource] {
+        //         Some((_, price)) => {
+        //             new_company_value += offer.amount * price;
+        //         }
+        //         None => {
+        //             break;
+        //         }
+        //     };
+        // }
         new_company_value
     }
 }
