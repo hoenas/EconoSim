@@ -15,7 +15,7 @@ pub struct DeepRLAgent {
 impl DeepRLAgent {
     pub fn new(state_dimensions: i32, action_dimensions: i32, discount: f64) -> DeepRLAgent {
         let mut neural_network =
-            FeedForward::new(&[state_dimensions, 3*action_dimensions, action_dimensions]);
+            FeedForward::new(&[state_dimensions, 2 * action_dimensions, action_dimensions]);
         neural_network.learning_rate(0.5);
         neural_network.activation(Relu);
         DeepRLAgent {
@@ -27,8 +27,8 @@ impl DeepRLAgent {
     }
 
     pub fn get_next_state_action(&mut self, state: Vec<f64>, exploration_factor: f64) -> usize {
-        if exploration_factor > rand::thread_rng().gen::<f64>() {
-            rand::thread_rng().next_u64() as usize % self.action_dimensions
+        if exploration_factor > rand::random::<f64>() {
+            rand::random::<usize>() % self.action_dimensions
         } else {
             let index_of_max: Option<usize> = self
                 .neural_network
