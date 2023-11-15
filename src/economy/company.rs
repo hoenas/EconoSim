@@ -12,8 +12,6 @@ use crate::reinforcement_learning::deep_rl_agent::DeepRLAgent;
 use crate::reinforcement_learning::state::CompanyState;
 use crate::world_data::market_data::MarketData;
 use crate::world_data::recipe_data::RecipeData;
-use crate::world_data::resource_data;
-use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 pub type CompanyHandle = usize;
 

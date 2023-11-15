@@ -1,5 +1,5 @@
 use clap::{arg, command, Parser};
-use econo_sim::{persistence::Persistence, reinforcement_learning::deep_rl_agent::DeepRLAgent};
+use econo_sim::persistence::Persistence;
 use simple_logger::SimpleLogger;
 
 #[derive(Parser, Debug)]

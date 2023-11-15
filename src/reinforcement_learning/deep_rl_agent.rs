@@ -2,8 +2,7 @@ use std::vec;
 
 use neuroflow::activators::Type::Relu;
 use neuroflow::FeedForward;
-use rand::{prelude::*, seq::index};
-use rurel::strategy::learn::q;
+use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
