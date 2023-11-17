@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 pub type OfferHandle = usize;
 pub type OrderHandle = usize;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct MarketData {
     pub offers: HashMap<OfferHandle, Offer>,
     pub orders: HashMap<OrderHandle, Order>,

@@ -1,7 +1,7 @@
 use crate::economy::producer::Producer;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ProducerData {
     pub producers: Vec<Producer>,
 }

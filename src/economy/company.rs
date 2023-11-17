@@ -6,16 +6,18 @@ use crate::economy::resource::ResourceHandle;
 use crate::economy::stock::Stock;
 use crate::market::offer::UnprocessedOffer;
 use crate::market::order::UnprocessedOrder;
-use crate::reinforcement_learning::action::ActionSpace;
-use crate::reinforcement_learning::action::CompanyAction;
+use crate::reinforcement_learning::action_space::ActionSpace;
+use crate::reinforcement_learning::action_space::CompanyAction;
 use crate::reinforcement_learning::deep_rl_agent::DeepRLAgent;
 use crate::reinforcement_learning::state::CompanyState;
 use crate::world_data::market_data::MarketData;
 use crate::world_data::recipe_data::RecipeData;
 use serde::{Deserialize, Serialize};
+
+use super::processor;
 pub type CompanyHandle = usize;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Company {
     pub name: String,
     pub stock: Stock,
@@ -28,6 +30,7 @@ pub struct Company {
     pub agent: DeepRLAgent,
     pub old_state: CompanyState,
     pub old_company_value: f64,
+    pub productive_processor_ticks: usize,
 }
 
 impl Company {
@@ -35,11 +38,13 @@ impl Company {
         name: &str,
         company_handle: CompanyHandle,
         resource_count: usize,
+        recipe_count: usize,
         state_dimensions: i32,
         action_dimensions: i32,
         discount: f64,
-        experience_replay_steps: usize,
+        experience_replay_batch_size: usize,
         experience_buffer_length: usize,
+        q_update_ticks: usize,
     ) -> Self {
         Company {
             name: name.to_string(),
@@ -54,11 +59,13 @@ impl Company {
                 state_dimensions,
                 action_dimensions,
                 discount,
-                experience_replay_steps,
+                experience_replay_batch_size,
                 experience_buffer_length,
+                q_update_ticks,
             ),
-            old_state: CompanyState::new(resource_count),
+            old_state: CompanyState::new(resource_count, recipe_count),
             old_company_value: 0.0,
+            productive_processor_ticks: 0,
         }
     }
 
@@ -76,6 +83,7 @@ impl Company {
         for processor in self.processors.iter_mut() {
             processor.tick(&mut self.stock, recipe_data);
             if processor.produced_last_tick {
+                self.productive_processor_ticks += 1;
                 let recipe = recipe_data.get_recipe_by_handle(processor.recipe).unwrap();
                 for (resource, amount) in recipe.products.iter() {
                     let total = (amount * processor.production_speed) as usize
@@ -85,6 +93,14 @@ impl Company {
             }
         }
         // Construct company state
+        let mut processor_counts = self.old_state.processor_counts.clone();
+        for recipe in 0..processor_counts.len() {
+            for processor in self.processors.iter() {
+                if processor.recipe == recipe {
+                    processor_counts[recipe] += 1;
+                }
+            }
+        }
         let company_state = CompanyState {
             stock: self.stock.resources.values().map(|x| *x as usize).collect(),
             currency: self.currency as usize,
@@ -110,16 +126,17 @@ impl Company {
                     }
                 })
                 .collect(),
+            processor_counts: processor_counts,
             production_rates: production_rates,
         };
 
         self.old_company_value = self.company_value;
         self.company_value = self.calculate_company_value(market_data, processor_price);
-
+        let reward = self.company_value - self.old_company_value - 1.0;
         if train {
             self.agent.train(
                 self.old_state.as_f64_vec(),
-                self.company_value - self.old_company_value - 1.0,
+                reward,
                 company_state.as_f64_vec(),
                 ticks,
             );
@@ -130,9 +147,9 @@ impl Company {
         self.old_state = company_state;
         // Act according to agent decision
         match actionspace.actions[action] {
-            // CompanyAction::Nothing => {
-            //     // do nothing
-            // }
+            CompanyAction::Nothing => {
+                // do nothing
+            }
             CompanyAction::BuyProcessor(recipe) => {
                 if recipe_data.recipes.len() <= recipe {
                     return;
@@ -148,11 +165,27 @@ impl Company {
                     }
                 }
             }
-            CompanyAction::BuyResource(resource, amount, max_price) => {
-                self.place_order(resource, amount as f64, max_price as f64);
+            CompanyAction::BuyResource(resource, amount) => {
+                // Buy resource to current best price
+                if market_data.price_index[&resource].is_none() {
+                    return;
+                }
+                self.place_order(
+                    resource,
+                    amount as f64,
+                    market_data.price_index[&resource].unwrap().1,
+                );
             }
-            CompanyAction::SellResource(resource, amount, price) => {
-                self.place_offer(resource, amount as f64, price as f64)
+            CompanyAction::SellResource(resource, amount) => {
+                // Sell resource to current best price
+                if market_data.order_index[&resource].is_none() {
+                    return;
+                }
+                self.place_offer(
+                    resource,
+                    amount as f64,
+                    market_data.order_index[&resource].unwrap().1,
+                );
             }
         }
     }

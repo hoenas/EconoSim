@@ -1,5 +1,4 @@
 use clap::{arg, command, Parser};
-use econo_sim::economy::company::Company;
 use econo_sim::economy::consumer::Consumer;
 use econo_sim::economy::processor::Processor;
 use econo_sim::economy::producer::Producer;
@@ -9,7 +8,7 @@ use econo_sim::market::marketplace::Marketplace;
 use econo_sim::market::offer::UnprocessedOffer;
 use econo_sim::market::order::UnprocessedOrder;
 use econo_sim::persistence::Persistence;
-use econo_sim::reinforcement_learning::action::ActionSpace;
+use econo_sim::reinforcement_learning::action_space::ActionSpace;
 use econo_sim::reinforcement_learning::state::CompanyState;
 use econo_sim::world::World;
 use econo_sim::world_data::consumer_data::ConsumerData;
@@ -17,6 +16,7 @@ use econo_sim::world_data::market_data::MarketData;
 use econo_sim::world_data::producer_data::ProducerData;
 use econo_sim::world_data::recipe_data::RecipeData;
 use econo_sim::world_data::resource_data::ResourceData;
+use econo_sim::{economy::company::Company, world_data::recipe_data};
 use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
@@ -101,22 +101,22 @@ struct Args {
     #[arg(short, long, default_value_t = 1)]
     company_count: usize,
     /// Path to company starting conditions file
-    #[arg(short, long, default_value_t =  String::from("data/company.yml"))]
+    #[arg(long, default_value_t =  String::from("data/company.yml"))]
     company_starting_conditions_file: String,
     /// Path to consumer file
-    #[arg(short, long, default_value_t =  String::from("data/consumer.yml"))]
+    #[arg(long, default_value_t =  String::from("data/consumer.yml"))]
     consumer_file: String,
     /// Path to processor file
-    #[arg(short, long, default_value_t =  String::from("data/processor.yml"))]
+    #[arg(long, default_value_t =  String::from("data/processor.yml"))]
     processor_file: String,
     /// Path to producer file
-    #[arg(short, long, default_value_t =  String::from("data/producer.yml"))]
+    #[arg(long, default_value_t =  String::from("data/producer.yml"))]
     producer_file: String,
     /// Path to recipes file
-    #[arg(short, long, default_value_t =  String::from("data/recipes.yml"))]
+    #[arg(long, default_value_t =  String::from("data/recipes.yml"))]
     recipes_file: String,
     /// Path to resources file
-    #[arg(short, long, default_value_t =  String::from("data/resources.yml"))]
+    #[arg(long, default_value_t =  String::from("data/resources.yml"))]
     resources_file: String,
     /// Path to save generated world to
     #[arg(short, long, default_value_t =  String::from("data/generated_world.yml"))]
@@ -262,6 +262,7 @@ fn main() {
     world.producer_data = render_producer_data(cli_args.producer_file, &world.resource_data);
     // Load recipe data
     world.recipe_data = render_recipe_data(cli_args.recipes_file, &world.resource_data);
+    let recipe_count = world.recipe_data.recipes.len();
     // Adjust resource count
     world.market_data.resource_count = resource_count;
     // Load company starting conditions
@@ -274,7 +275,7 @@ fn main() {
     world.actionspace = actionspace;
     let actionspace_dimensions = world.actionspace.actions.len();
     // Define start state
-    let mut start_state = CompanyState::new(resource_count);
+    let mut start_state = CompanyState::new(resource_count, recipe_count);
     for (resource, amount) in company_starting_conditions.stock.resources.iter() {
         start_state.stock[*resource] = *amount as usize;
     }
@@ -291,10 +292,12 @@ fn main() {
                 &format!("Company {}", x),
                 x,
                 resource_count,
+                recipe_count,
                 statespace_dimensions as i32,
                 actionspace_dimensions as i32,
-                0.97,
-                99,
+                0.99,
+                32,
+                1000,
                 100,
             )
         })

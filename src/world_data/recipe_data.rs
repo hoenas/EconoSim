@@ -2,7 +2,7 @@ use crate::economy::recipe::{Recipe, RecipeHandle};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct RecipeData {
     pub recipes: Vec<Recipe>,
 }

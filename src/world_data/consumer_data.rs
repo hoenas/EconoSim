@@ -1,7 +1,7 @@
 use crate::economy::consumer::Consumer;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ConsumerData {
     pub consumers: Vec<Consumer>,
 }

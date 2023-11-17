@@ -8,7 +8,7 @@ use crate::world_data::market_data::MarketData;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Marketplace {
     next_offer_id: OfferHandle,
     next_order_id: OrderHandle,

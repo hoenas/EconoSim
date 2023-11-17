@@ -1,7 +1,7 @@
 use crate::market::marketplace::Marketplace;
 use crate::market::offer::Offer;
 use crate::market::order::Order;
-use crate::reinforcement_learning::action::ActionSpace;
+use crate::reinforcement_learning::action_space::ActionSpace;
 use crate::world_data::company_data::CompanyData;
 use crate::world_data::consumer_data::ConsumerData;
 use crate::world_data::market_data::MarketData;
@@ -12,7 +12,7 @@ use crate::world_data::resource_data::ResourceData;
 use log::info;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct World {
     pub company_data: CompanyData,
     pub processor_data: ProcessorData,

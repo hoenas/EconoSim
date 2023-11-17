@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 pub type RecipeHandle = usize;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Recipe {
     pub name: String,
     pub ingredients: HashMap<ResourceHandle, f64>,

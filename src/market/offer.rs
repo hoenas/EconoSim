@@ -13,7 +13,7 @@ pub struct UnprocessedOffer {
     pub time_to_live: usize,
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Offer {
     pub resource: ResourceHandle,
     pub amount: f64,

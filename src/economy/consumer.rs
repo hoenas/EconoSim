@@ -1,7 +1,7 @@
 use crate::market::order::UnprocessedOrder;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Consumer {
     pub consumption: Vec<UnprocessedOrder>,
     pub orders: Vec<UnprocessedOrder>,
@@ -14,19 +14,19 @@ impl Consumer {
         Self {
             consumption: vec![],
             orders: vec![],
-            order_creation_ticks: 1000,
+            order_creation_ticks: 100,
             current_tick: 0,
         }
     }
 
     pub fn tick(&mut self) {
         // TODO: implement complex need behaviour
-        self.current_tick += 1;
-        if self.current_tick == self.order_creation_ticks {
+        if self.current_tick % self.order_creation_ticks == 0 {
             for order in self.consumption.iter() {
                 self.current_tick = 0;
                 self.orders.push(order.clone());
             }
         }
+        self.current_tick += 1;
     }
 }

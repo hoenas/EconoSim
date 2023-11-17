@@ -1,7 +1,4 @@
 stock:
-  resources:
-    Water: 0.0
-    Wood: 0.0
-    Clay: 0.0
+  resources: {}
 currency: 1000.0
 processors: []

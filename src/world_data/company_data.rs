@@ -1,7 +1,7 @@
 use crate::economy::company::{Company, CompanyHandle};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct CompanyData {
     pub companies: Vec<Company>,
 }
