@@ -9,7 +9,18 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Default, Clone)]
+pub struct MarketplaceStatistics {
+    pub company_orders_placed: usize,
+    pub company_offers_placed: usize,
+    pub company_orders_partly_fulfilled: usize,
+    pub company_offers_partly_fulfilled: usize,
+    pub company_orders_fulfilled: usize,
+    pub company_offers_fulfilled: usize,
+}
+
+#[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Marketplace {
+    pub statistics: MarketplaceStatistics,
     next_offer_id: OfferHandle,
     next_order_id: OrderHandle,
 }
@@ -17,6 +28,7 @@ pub struct Marketplace {
 impl Marketplace {
     pub fn new() -> Marketplace {
         Marketplace {
+            statistics: MarketplaceStatistics::default(),
             next_offer_id: 0,
             next_order_id: 0,
         }
@@ -80,6 +92,9 @@ impl Marketplace {
         if offer.amount <= 0.0 || offer.resource >= market_data.resource_count {
             return None;
         }
+        if offer.company.is_some() {
+            self.statistics.company_offers_placed += 1;
+        }
         self.next_offer_id += 1;
         market_data.offers.insert(self.next_offer_id, offer);
         self.update_price_index(market_data);
@@ -94,6 +109,9 @@ impl Marketplace {
         // Order sanity checks
         if order.amount <= 0.0 || order.resource >= market_data.resource_count {
             return None;
+        }
+        if order.company.is_some() {
+            self.statistics.company_orders_placed += 1;
         }
         self.next_order_id += 1;
         market_data.orders.insert(self.next_order_id, order);
@@ -117,7 +135,7 @@ impl Marketplace {
         Some(&market_data.orders[&order_handle])
     }
 
-    fn execute_orders(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
+    fn execute_orders(&mut self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
         // Check all orders
         for order in market_data.orders.values_mut() {
             // We are trying to fulfill the hole order
@@ -130,6 +148,8 @@ impl Marketplace {
                             match market_data.offers.get_mut(&offer_handle) {
                                 Some(offer) => {
                                     if offer.amount < order.amount {
+                                        // Offer will be consumed
+                                        // Order will be partly finished
                                         // Consume offer
                                         order.amount -= offer.amount;
                                         // Check if the order was created by a real company
@@ -145,28 +165,33 @@ impl Marketplace {
                                                     * offer.amount;
                                                 companies[ordering_company]
                                                     .add_currency(price_delta);
-                                                // Pay out offering company if it exists
-                                                match offer.company {
-                                                    Some(offering_company) => {
-                                                        companies[offering_company].add_currency(
-                                                            offer.price_per_unit * offer.amount,
-                                                        );
-                                                    }
-                                                    None => {
-                                                        // Offer was created by a producer
-                                                        // No company to add currency to
-                                                    }
-                                                }
+                                                self.statistics.company_orders_partly_fulfilled +=
+                                                    1;
                                             }
                                             None => {
                                                 // Order was created by a consumer
                                                 // No company to add resources to and remove currency from
                                             }
                                         }
+                                        // Pay out offering company if it exists
+                                        match offer.company {
+                                            Some(offering_company) => {
+                                                companies[offering_company].add_currency(
+                                                    offer.price_per_unit * offer.amount,
+                                                );
+                                                self.statistics.company_offers_fulfilled += 1;
+                                            }
+                                            None => {
+                                                // Offer was created by a producer
+                                                // No company to add currency to
+                                            }
+                                        }
 
                                         // We consumed the hole amount of the offer and must therefore remove it from the market
                                         market_data.offers.remove(&offer_handle);
                                     } else {
+                                        // Offer will be partly consumed
+                                        // Order will be finished
                                         // Check if the order was created by a real company
                                         match order.company {
                                             Some(ordering_company) => {
@@ -180,22 +205,25 @@ impl Marketplace {
                                                     * order.amount;
                                                 companies[ordering_company]
                                                     .add_currency(price_delta);
-                                                // Pay out offering company if it exists
-                                                match offer.company {
-                                                    Some(offering_company) => {
-                                                        companies[offering_company].add_currency(
-                                                            offer.price_per_unit * order.amount,
-                                                        );
-                                                    }
-                                                    None => {
-                                                        // Offer was created by a producer
-                                                        // No company to add currency to
-                                                    }
-                                                }
+                                                self.statistics.company_orders_fulfilled += 1;
                                             }
                                             None => {
                                                 // Order was created by a consumer
                                                 // No company to add resources to and remove currency from
+                                            }
+                                        }
+                                        // Pay out offering company if it exists
+                                        match offer.company {
+                                            Some(offering_company) => {
+                                                companies[offering_company].add_currency(
+                                                    offer.price_per_unit * order.amount,
+                                                );
+                                                self.statistics.company_offers_partly_fulfilled +=
+                                                    1;
+                                            }
+                                            None => {
+                                                // Offer was created by a producer
+                                                // No company to add currency to
                                             }
                                         }
                                         // Reduce offer and order amount
@@ -276,7 +304,7 @@ impl Marketplace {
         }
     }
 
-    pub fn tick(&self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
+    pub fn tick(&mut self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
         self.execute_orders(market_data, companies);
         self.cleanup_complete_orders(market_data);
         self.cleanup_dead_orders(market_data, companies);

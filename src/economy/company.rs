@@ -80,7 +80,13 @@ impl Company {
         ticks: usize,
     ) {
         let mut production_rates: Vec<usize> = vec![0; self.old_state.production_rates.len()];
+        // Construct company state
+        let mut processor_counts = self.old_state.processor_counts.clone();
+        for recipe in 0..processor_counts.len() {
+            processor_counts[recipe] = 0;
+        }
         for processor in self.processors.iter_mut() {
+            processor_counts[processor.recipe] += 1;
             processor.tick(&mut self.stock, recipe_data);
             if processor.produced_last_tick {
                 self.productive_processor_ticks += 1;
@@ -89,15 +95,6 @@ impl Company {
                     let total = (amount * processor.production_speed) as usize
                         + production_rates.get(*resource).unwrap();
                     production_rates[*resource] = total;
-                }
-            }
-        }
-        // Construct company state
-        let mut processor_counts = self.old_state.processor_counts.clone();
-        for recipe in 0..processor_counts.len() {
-            for processor in self.processors.iter() {
-                if processor.recipe == recipe {
-                    processor_counts[recipe] += 1;
                 }
             }
         }

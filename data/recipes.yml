@@ -2,30 +2,29 @@
 recipes:
   - name: Coal
     ingredients:
-      Wood: 5
-      Clay: 7
+      Wood: 1
     products:
-      Coal: 5
+      Coal: 1
     production_speed: 1
   - name: Pottery
     ingredients:
-      Coal: 3
-      Clay: 2
-      Water: 2
+      Coal: 1
+      Clay: 1
+      Water: 1
     products:
-      Pottery: 5
+      Pottery: 1
     production_speed: 1
   - name: Iron
     ingredients:
-      Coal: 10
-      IronOre: 20
+      Coal: 1
+      IronOre: 1
     products:
-      Iron: 10
+      Iron: 1
     production_speed: 1
   - name: Steel
     ingredients:
-      Coal: 20
-      Iron: 20
+      Coal: 1
+      Iron: 1
     products:
-      Steel: 10
+      Steel: 1
     production_speed: 1

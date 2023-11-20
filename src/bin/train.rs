@@ -32,6 +32,9 @@ struct Args {
     /// Exploration factor (if 0.0, an adaptive exploration factor will be used)
     #[arg(long, default_value_t = 0.0)]
     exploration_factor: f64,
+    /// Minimum exploration factor to be used (only used if adaptive exploration factor is used)
+    #[arg(long, default_value_t = 0.05)]
+    min_exploration_factor: f64,
 }
 
 fn reset_world(world: &mut World, reference_world: &World) -> World {
@@ -74,6 +77,12 @@ fn main() {
     let writer_file = std::fs::File::create(&cli_args.training_out_file).unwrap();
     let mut csv_writer = csv::Writer::from_writer(writer_file);
     let mut title_column: Vec<String> = vec![];
+    title_column.push(format!("Orders placed"));
+    title_column.push(format!("Partly fulfilled orders"));
+    title_column.push(format!("Fulfilled orders"));
+    title_column.push(format!("Offers placed"));
+    title_column.push(format!("Partly fulfilled offers"));
+    title_column.push(format!("Fulfilled offers"));
     for company in trained_world.company_data.companies.iter() {
         title_column.push(format!("{} value", company.name));
         title_column.push(format!("{} processor count", company.name));
@@ -82,15 +91,20 @@ fn main() {
     title_column.insert(0, String::from("Epoch"));
     csv_writer.write_record(&title_column).unwrap();
 
+    let mut exploration_factor = cli_args.exploration_factor;
+
     for epoch in 0..epochs {
         let training_percentage = ((epoch as f64 / epochs as f64) * 100.0).floor();
-        log::info!("Epoch {epoch} ({training_percentage}%)");
         world_saved = false;
-        let mut start = Instant::now();
-        let mut exploration_factor = cli_args.exploration_factor;
-        if exploration_factor == 0.0 {
+        let start = Instant::now();
+
+        if cli_args.exploration_factor == 0.0 {
             exploration_factor = 1.0 - (epoch as f64 / epochs as f64);
+            exploration_factor = exploration_factor.max(cli_args.min_exploration_factor);
         }
+        log::info!(
+            "Epoch {epoch} ({training_percentage}%) | Exploration factor : {exploration_factor}"
+        );
         for k in 0..training_ticks {
             if k % max(training_ticks / 100, 1) == 0 {
                 print!(".");
@@ -99,12 +113,38 @@ fn main() {
             trained_world.tick(true, exploration_factor, k);
         }
         println!();
-        let mut fps = num.format(".4s", training_ticks as f64 / start.elapsed().as_secs_f64());
+        let fps = num.format(".4s", training_ticks as f64 / start.elapsed().as_secs_f64());
         log::info!("Trained with {} ticks/s", fps);
 
         log::info!("Writing training performance data...");
         let mut training_data: Vec<i64> = vec![];
         training_data.push(epoch as i64);
+        training_data.push(trained_world.market_place.statistics.company_orders_placed as i64);
+        training_data.push(
+            trained_world
+                .market_place
+                .statistics
+                .company_orders_partly_fulfilled as i64,
+        );
+        training_data.push(
+            trained_world
+                .market_place
+                .statistics
+                .company_orders_fulfilled as i64,
+        );
+        training_data.push(trained_world.market_place.statistics.company_offers_placed as i64);
+        training_data.push(
+            trained_world
+                .market_place
+                .statistics
+                .company_offers_partly_fulfilled as i64,
+        );
+        training_data.push(
+            trained_world
+                .market_place
+                .statistics
+                .company_offers_fulfilled as i64,
+        );
         for company in trained_world.company_data.companies.iter() {
             training_data.push(company.company_value.round() as i64);
             training_data.push(company.processors.len() as i64);

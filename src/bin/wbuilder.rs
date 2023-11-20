@@ -297,8 +297,8 @@ fn main() {
                 actionspace_dimensions as i32,
                 0.99,
                 32,
-                1000,
-                100,
+                10000,
+                25,
             )
         })
         .map(|mut x| {

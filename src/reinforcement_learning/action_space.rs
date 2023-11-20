@@ -26,8 +26,8 @@ impl ActionSpace {
         }
         // TODO: Allow creation of offers / orders that are not according to best price policy
         for i in 1..resource_count {
-            actionspace.push(CompanyAction::BuyResource(i, 5));
-            actionspace.push(CompanyAction::SellResource(i, 5));
+            actionspace.push(CompanyAction::BuyResource(i, 1));
+            actionspace.push(CompanyAction::SellResource(i, 1));
         }
         ActionSpace {
             actions: actionspace,
