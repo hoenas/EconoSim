@@ -306,6 +306,10 @@ fn main() {
             x.processors = company_starting_conditions.processors.clone();
             x.currency = company_starting_conditions.currency;
             x.old_state = start_state.clone();
+            let company_value =
+                x.calculate_company_value(&world.market_data, world.processor_data.processor_price);
+            x.company_value = company_value;
+            x.old_company_value = company_value;
             x
         })
         .collect();
