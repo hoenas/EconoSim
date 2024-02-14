@@ -295,10 +295,10 @@ fn main() {
                 recipe_count,
                 statespace_dimensions as i32,
                 actionspace_dimensions as i32,
-                0.99,
+                0.5,
                 32,
                 10000,
-                25,
+                10000,
             )
         })
         .map(|mut x| {

@@ -46,6 +46,7 @@ fn reset_world(world: &mut World, reference_world: &World) -> World {
         new_world.company_data.companies[i].agent.target_network = cloned_agent.target_network;
         new_world.company_data.companies[i].agent.experience_buffer =
             cloned_agent.experience_buffer.clone();
+        new_world.company_data.companies[i].agent.target_network_update_tick = cloned_agent.target_network_update_tick;
     }
     return new_world;
 }

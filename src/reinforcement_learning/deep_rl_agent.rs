@@ -30,7 +30,8 @@ pub struct DeepRLAgent {
     experience_replay_batch_size: usize,
     experience_buffer_length: usize,
     pub experience_buffer: Vec<Experience>,
-    q_update_ticks: usize,
+    target_network_update: usize,
+    pub target_network_update_tick: usize,
 }
 
 impl DeepRLAgent {
@@ -63,7 +64,8 @@ impl DeepRLAgent {
             experience_replay_batch_size,
             experience_buffer_length: experience_buffer_length,
             experience_buffer: vec![],
-            q_update_ticks: q_update_ticks,
+            target_network_update: q_update_ticks,
+            target_network_update_tick: 0,
         };
         agent.update_q();
         agent
@@ -126,17 +128,19 @@ impl DeepRLAgent {
                 let target_q_values = self.target_network.calc(&experience.new_state).to_vec();
                 let max_action_reward = DeepRLAgent::get_max(&target_q_values).1;
                 // Update Q values for training
-                // TODO: Limit to [-1,1]
                 // https://github.com/rajibhossen/dqn-examples/blob/master/mountain-car-dqn.py#L160C62-L160C69
-                policy_q_values[experience.action] =
-                    experience.reward + self.discount * max_action_reward;
-                // - policy_q_values[experience.action];
+                let mut target_q_value = experience.reward + self.discount * max_action_reward;
+                // Limit to [-1,1]
+                target_q_value = target_q_value.max(-1.0);
+                target_q_value = target_q_value.min(1.0);
+                policy_q_values[experience.action] = target_q_value;
                 // Train
                 self.q_network.fit(&experience.old_state, &policy_q_values);
             }
         }
-
-        if (ticks + 1) % self.q_update_ticks == 0 {
+        self.target_network_update_tick += 1;
+        if (self.target_network_update_tick + 1) % self.target_network_update == 0 {
+            self.target_network_update_tick = 0;
             self.update_q();
         }
     }
@@ -157,7 +161,8 @@ impl Clone for DeepRLAgent {
             experience_replay_batch_size: self.experience_replay_batch_size.clone(),
             experience_buffer_length: self.experience_buffer_length.clone(),
             experience_buffer: self.experience_buffer.clone(),
-            q_update_ticks: self.q_update_ticks.clone(),
+            target_network_update: self.target_network_update.clone(),
+            target_network_update_tick: self.target_network_update_tick.clone(),
         }
     }
 }
