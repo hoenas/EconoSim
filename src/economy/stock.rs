@@ -150,10 +150,18 @@ mod tests {
     }
 
     #[test]
-    fn calculate_new_stock_value_zero() {
+    fn remove_resource_from_stock_if_possible() {
         let mut stock = Stock::new();
         stock.resources.insert(0, 10.0);
-        assert_eq!(stock.calculate_new_stock_value(0, 10.0), 0.0);
+        stock.resources.insert(1, 10.0);
+        // Removing possible
+        assert!(stock.remove_resource_from_stock_if_possible(0, 5.0));
+        assert_eq!(*stock.resources.get(&0).unwrap(), 5.0);
+        assert_eq!(*stock.resources.get(&1).unwrap(), 10.0);
+        // Removing not possible
+        assert!(!stock.remove_resource_from_stock_if_possible(1, 15.0));
+        assert_eq!(*stock.resources.get(&0).unwrap(), 5.0);
+        assert_eq!(*stock.resources.get(&1).unwrap(), 10.0);
     }
 
     #[test]
