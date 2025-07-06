@@ -5,6 +5,3 @@ pub mod reinforcement_learning;
 // pub mod visualization;
 pub mod world;
 pub mod world_data;
-
-#[cfg(test)]
-mod tests;
