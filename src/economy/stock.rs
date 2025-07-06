@@ -35,7 +35,10 @@ impl Stock {
     }
 
     pub fn check_resource_in_stock(&mut self, resource: ResourceHandle, amount: f64) -> bool {
-        self.calculate_new_stock_value(resource, amount) >= 0.0 && amount >= 0.0
+        if amount < 0.0 {
+            panic!("Resources amounts must be greater than zero!")
+        }
+        self.calculate_new_stock_value(resource, amount) >= 0.0
     }
 
     pub fn check_resources_in_stock(
@@ -54,6 +57,9 @@ impl Stock {
         resource: ResourceHandle,
         amount: f64,
     ) -> bool {
+        if amount < 0.0 {
+            panic!("Cannot remove amount smaller than zero!")
+        }
         let value_after_transaction = self.calculate_new_stock_value(resource, amount);
         if value_after_transaction >= 0.0 {
             self.resources.insert(resource, value_after_transaction);
@@ -165,6 +171,16 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn remove_resource_from_stock_if_possible_negative_amount() {
+        let mut stock = Stock::new();
+        stock.resources.insert(0, 10.0);
+        stock.resources.insert(1, 10.0);
+        // Removing possible
+        stock.remove_resource_from_stock_if_possible(0, -5.0);
+    }
+
+    #[test]
     fn remove_resources_from_stock_if_possible() {
         let mut stock = Stock::new();
         stock.resources.insert(0, 10.0);
@@ -178,6 +194,17 @@ mod tests {
         assert!(!stock.remove_resources_from_stock_if_possible(&transaction));
         assert_eq!(*stock.resources.get(&0).unwrap(), 5.0);
         assert_eq!(*stock.resources.get(&1).unwrap(), 0.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn remove_resources_from_stock_if_possible_negative_amount() {
+        let mut stock = Stock::new();
+        stock.resources.insert(0, 10.0);
+        stock.resources.insert(1, 10.0);
+        // Removing possible
+        let transaction: Vec<(ResourceHandle, f64)> = vec![(0, 5.0), (1, -10.0)];
+        stock.remove_resources_from_stock_if_possible(&transaction);
     }
 
     #[test]
