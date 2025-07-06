@@ -158,7 +158,10 @@ impl Marketplace {
                                             Some(ordering_company) => {
                                                 companies[ordering_company]
                                                     .stock
-                                                    .add_to_stock(order.resource, offer.amount);
+                                                    .add_resource_to_stock(
+                                                        order.resource,
+                                                        offer.amount,
+                                                    );
                                                 // Give delta currency from max price back
                                                 let price_delta = (order.max_price_per_unit
                                                     - offer.price_per_unit)
@@ -198,7 +201,10 @@ impl Marketplace {
                                                 // Give resources to ordering company
                                                 companies[ordering_company]
                                                     .stock
-                                                    .add_to_stock(order.resource, order.amount);
+                                                    .add_resource_to_stock(
+                                                        order.resource,
+                                                        order.amount,
+                                                    );
                                                 // Give delta currency from max price back
                                                 let price_delta = (order.max_price_per_unit
                                                     - offer.price_per_unit)
@@ -292,7 +298,7 @@ impl Marketplace {
                 Some(company) => {
                     companies[company]
                         .stock
-                        .add_to_stock(offer.resource, offer.amount);
+                        .add_resource_to_stock(offer.resource, offer.amount);
                 }
                 None => {}
             }

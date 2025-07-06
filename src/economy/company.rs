@@ -192,7 +192,7 @@ impl Company {
     }
 
     pub fn add_resource(&mut self, resource: ResourceHandle, amount: f64) {
-        self.stock.add_to_stock(resource, amount);
+        self.stock.add_resource_to_stock(resource, amount);
     }
 
     // Methods to be used by an AI controller

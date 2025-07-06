@@ -154,7 +154,7 @@ impl World {
             for offer in company.offers.iter_mut() {
                 if !company
                     .stock
-                    .remove_from_stock_if_possible(offer.resource, offer.amount)
+                    .remove_resource_from_stock_if_possible(offer.resource, offer.amount)
                 {
                     continue;
                 }

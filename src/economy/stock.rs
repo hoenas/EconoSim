@@ -49,10 +49,13 @@ impl Stock {
         in_stock
     }
 
-    pub fn make_transaction(&mut self, resource_transactions: &Vec<(ResourceHandle, f64)>) -> bool {
+    pub fn remove_resources_from_stock_if_possible(
+        &mut self,
+        resource_transactions: &Vec<(ResourceHandle, f64)>,
+    ) -> bool {
         if self.check_resources_in_stock(resource_transactions) {
             for (resource, amount) in resource_transactions.iter() {
-                self.remove_from_stock_if_possible(*resource, *amount);
+                self.remove_resource_from_stock_if_possible(*resource, *amount);
             }
             true
         } else {
@@ -60,7 +63,11 @@ impl Stock {
         }
     }
 
-    pub fn remove_from_stock_if_possible(&mut self, resource: ResourceHandle, amount: f64) -> bool {
+    pub fn remove_resource_from_stock_if_possible(
+        &mut self,
+        resource: ResourceHandle,
+        amount: f64,
+    ) -> bool {
         let value_after_transaction = self.calculate_new_stock_value(resource, amount);
         if value_after_transaction >= 0.0 {
             self.resources.insert(resource, value_after_transaction);
@@ -70,7 +77,7 @@ impl Stock {
         }
     }
 
-    pub fn add_to_stock(&mut self, resource: ResourceHandle, amount: f64) {
+    pub fn add_resource_to_stock(&mut self, resource: ResourceHandle, amount: f64) {
         if amount < 0.0 {
             panic!("Cannot add amount smaller than zero!")
         }
@@ -150,28 +157,28 @@ mod tests {
     }
 
     #[test]
-    fn add_to_stock() {
+    fn add_resource_to_stock() {
         let mut stock = Stock::new();
         stock.resources.insert(0, 10.0);
         stock.resources.insert(1, 10.0);
         // Add nothing
-        stock.add_to_stock(0, 0.0);
+        stock.add_resource_to_stock(0, 0.0);
         assert_eq!(*stock.resources.get(&0).unwrap(), 10.0);
         assert_eq!(*stock.resources.get(&1).unwrap(), 10.0);
         // Add something
-        stock.add_to_stock(0, 5.0);
+        stock.add_resource_to_stock(0, 5.0);
         assert_eq!(*stock.resources.get(&0).unwrap(), 15.0);
         assert_eq!(*stock.resources.get(&1).unwrap(), 10.0);
     }
 
     #[test]
     #[should_panic]
-    fn add_to_stock_subtract_something() {
+    fn add_resource_to_stock_subtract_something() {
         let mut stock = Stock::new();
         // Add resources
         stock.resources.insert(0, 10.0);
         stock.resources.insert(1, 10.0);
         // Actual test
-        stock.add_to_stock(1, -10.0);
+        stock.add_resource_to_stock(1, -10.0);
     }
 }

@@ -229,7 +229,7 @@ fn render_company_starting_conditions(
     // Create stock
     let mut stock = Stock::new();
     for (resource, amount) in unrendered.stock.resources.iter() {
-        stock.add_to_stock(
+        stock.add_resource_to_stock(
             resource_data.get_resource_handle_by_name(resource).unwrap(),
             *amount,
         )
@@ -316,7 +316,7 @@ fn main() {
     // Add all resources to stock
     for company in companies.iter_mut() {
         for resource in 0..world.resource_data.resources.len() {
-            company.stock.add_to_stock(resource, 0.0);
+            company.stock.add_resource_to_stock(resource, 0.0);
         }
     }
     world.company_data.companies = companies;
