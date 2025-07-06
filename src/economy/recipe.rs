@@ -2,6 +2,9 @@ use crate::economy::resource::ResourceHandle;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use mockall::automock;
+use mockall_double::double;
+
 pub type RecipeHandle = usize;
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -12,6 +15,7 @@ pub struct Recipe {
     pub production_speed: f64,
 }
 
+#[automock]
 impl Recipe {
     pub fn new(name: String, production_speed: f64) -> Self {
         Self {

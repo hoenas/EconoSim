@@ -71,6 +71,9 @@ impl Stock {
     }
 
     pub fn add_to_stock(&mut self, resource: ResourceHandle, amount: f64) {
+        if amount < 0.0 {
+            panic!("Cannot add amount smaller than zero!")
+        }
         let new_value = self.get_resource_amount_in_stock(resource) + amount;
         self.resources.insert(resource, new_value);
     }
