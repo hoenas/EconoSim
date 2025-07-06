@@ -146,7 +146,7 @@ mod tests {
         assert!(stock.check_resources_in_stock(&param_available));
         // Not available
         let param_not_available: Vec<(ResourceHandle, f64)> = vec![(0, 10.0), (1, 15.0)];
-        assert!(stock.check_resources_in_stock(&param_not_available));
+        assert!(!stock.check_resources_in_stock(&param_not_available));
     }
 
     #[test]
@@ -162,6 +162,22 @@ mod tests {
         assert!(!stock.remove_resource_from_stock_if_possible(1, 15.0));
         assert_eq!(*stock.resources.get(&0).unwrap(), 5.0);
         assert_eq!(*stock.resources.get(&1).unwrap(), 10.0);
+    }
+
+    #[test]
+    fn remove_resources_from_stock_if_possible() {
+        let mut stock = Stock::new();
+        stock.resources.insert(0, 10.0);
+        stock.resources.insert(1, 10.0);
+        // Removing possible
+        let transaction: Vec<(ResourceHandle, f64)> = vec![(0, 5.0), (1, 10.0)];
+        assert!(stock.remove_resources_from_stock_if_possible(&transaction));
+        assert_eq!(*stock.resources.get(&0).unwrap(), 5.0);
+        assert_eq!(*stock.resources.get(&1).unwrap(), 0.0);
+        // Removing not possible
+        assert!(!stock.remove_resources_from_stock_if_possible(&transaction));
+        assert_eq!(*stock.resources.get(&0).unwrap(), 5.0);
+        assert_eq!(*stock.resources.get(&1).unwrap(), 0.0);
     }
 
     #[test]
