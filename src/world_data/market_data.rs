@@ -30,7 +30,7 @@ impl MarketData {
             orders: HashMap::new(),
             price_index: price_index,
             order_index: order_index,
-            resource_count: 0,
+            resource_count: resource_count,
         }
     }
 }
