@@ -35,7 +35,7 @@ impl Stock {
     }
 
     pub fn check_resource_in_stock(&mut self, resource: ResourceHandle, amount: f64) -> bool {
-        self.calculate_new_stock_value(resource, amount) >= 0.0
+        self.calculate_new_stock_value(resource, amount) >= 0.0 && amount >= 0.0
     }
 
     pub fn check_resources_in_stock(
