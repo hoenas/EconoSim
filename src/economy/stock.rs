@@ -94,35 +94,74 @@ impl Stock {
 mod tests {
 
     use super::Stock;
+    use crate::economy::resource::ResourceHandle;
 
     #[test]
-    fn get_resource_amount_in_stock_exists() {
+    fn get_resource_amount_in_stock_resource() {
         let mut stock = Stock::new();
-        assert_eq!(stock.get_resource_amount_in_stock(0), 0.0)
+        stock.resources.insert(0, 10.0);
+        // Existing
+        assert_eq!(stock.get_resource_amount_in_stock(0), 10.0);
+        // Not existing
+        assert_eq!(stock.get_resource_amount_in_stock(1), 0.0);
     }
 
     #[test]
-    fn add_to_stock_add_nothing() {
+    fn calculate_new_stock_value_positive() {
         let mut stock = Stock::new();
-        // Add resources
+        stock.resources.insert(0, 10.0);
+        // Positive
+        assert_eq!(stock.calculate_new_stock_value(0, 5.0), 5.0);
+        // Negative
+        assert_eq!(stock.calculate_new_stock_value(0, 15.0), -5.0);
+        // Zero
+        assert_eq!(stock.calculate_new_stock_value(0, 10.0), 0.0);
+    }
+
+    #[test]
+    fn check_resource_in_stock() {
+        let mut stock = Stock::new();
+        stock.resources.insert(0, 10.0);
+        // Available
+        assert!(stock.check_resource_in_stock(0, 5.0));
+        assert!(stock.check_resource_in_stock(0, 10.0));
+        // Not available
+        assert!(!stock.check_resource_in_stock(0, 15.0));
+    }
+
+    #[test]
+    fn check_resources_in_stock() {
+        let mut stock = Stock::new();
         stock.resources.insert(0, 10.0);
         stock.resources.insert(1, 10.0);
-        // Actual test
+        // Available
+        let param_available: Vec<(ResourceHandle, f64)> = vec![(0, 10.0), (1, 10.0)];
+        assert!(stock.check_resources_in_stock(&param_available));
+        // Not available
+        let param_not_available: Vec<(ResourceHandle, f64)> = vec![(0, 10.0), (1, 15.0)];
+        assert!(stock.check_resources_in_stock(&param_not_available));
+    }
+
+    #[test]
+    fn calculate_new_stock_value_zero() {
+        let mut stock = Stock::new();
+        stock.resources.insert(0, 10.0);
+        assert_eq!(stock.calculate_new_stock_value(0, 10.0), 0.0);
+    }
+
+    #[test]
+    fn add_to_stock() {
+        let mut stock = Stock::new();
+        stock.resources.insert(0, 10.0);
+        stock.resources.insert(1, 10.0);
+        // Add nothing
         stock.add_to_stock(0, 0.0);
         assert_eq!(*stock.resources.get(&0).unwrap(), 10.0);
-        assert_eq!(*stock.resources.get(&0).unwrap(), 10.0);
-    }
-
-    #[test]
-    fn add_to_stock_add_something() {
-        let mut stock = Stock::new();
-        // Add resources
-        stock.resources.insert(0, 10.0);
-        stock.resources.insert(1, 10.0);
-        // Actual test
-        stock.add_to_stock(1, 10.0);
-        assert_eq!(*stock.resources.get(&0).unwrap(), 10.0);
-        assert_eq!(*stock.resources.get(&1).unwrap(), 20.0);
+        assert_eq!(*stock.resources.get(&1).unwrap(), 10.0);
+        // Add something
+        stock.add_to_stock(0, 5.0);
+        assert_eq!(*stock.resources.get(&0).unwrap(), 15.0);
+        assert_eq!(*stock.resources.get(&1).unwrap(), 10.0);
     }
 
     #[test]
