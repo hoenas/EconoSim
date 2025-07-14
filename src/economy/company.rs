@@ -266,43 +266,44 @@ impl Company {
     }
 
     pub fn calculate_company_value(&self, market_data: &MarketData, processor_value: f64) -> f64 {
-        let mut new_company_value = self.currency;
+        // Currency is twice as much as appreciated than raw company value
+        let mut new_company_value = 2.0 * self.currency;
         // Add value of all processors
-        // new_company_value += self.processors.len() as f64 * processor_value;
-        // // Add stockpile value
-        // for (resource, amount) in self.stock.resources.iter() {
-        //     if market_data.price_index.contains_key(resource) {
-        //         match market_data.price_index[resource] {
-        //             Some((_, price)) => {
-        //                 new_company_value += *amount * price;
-        //             }
-        //             None => {
-        //                 continue;
-        //             }
-        //         };
-        //     }
-        // }
-        // // Add companies offers current value
-        // for offer in market_data.offers.values() {
-        //     match offer.company {
-        //         Some(company) => {
-        //             if company != self.id {
-        //                 continue;
-        //             }
-        //         }
-        //         None => {
-        //             continue;
-        //         }
-        //     }
-        //     match market_data.price_index[&offer.resource] {
-        //         Some((_, price)) => {
-        //             new_company_value += offer.amount * price;
-        //         }
-        //         None => {
-        //             break;
-        //         }
-        //     };
-        // }
+        new_company_value += self.processors.len() as f64 * processor_value;
+        // Add stockpile value
+        for (resource, amount) in self.stock.resources.iter() {
+            if market_data.price_index.contains_key(resource) {
+                match market_data.price_index[resource] {
+                    Some((_, price)) => {
+                        new_company_value += *amount * price;
+                    }
+                    None => {
+                        continue;
+                    }
+                };
+            }
+        }
+        // Add companies offers current value
+        for offer in market_data.offers.values() {
+            match offer.company {
+                Some(company) => {
+                    if company != self.id {
+                        continue;
+                    }
+                }
+                None => {
+                    continue;
+                }
+            }
+            match market_data.price_index[&offer.resource] {
+                Some((_, price)) => {
+                    new_company_value += offer.amount * price;
+                }
+                None => {
+                    break;
+                }
+            };
+        }
         new_company_value
     }
 }
