@@ -69,16 +69,8 @@ impl Company {
         }
     }
 
-    pub fn tick(
-        &mut self,
-        recipe_data: &RecipeData,
-        market_data: &MarketData,
-        processor_price: f64,
-        actionspace: &ActionSpace,
-        train: bool,
-        exploration_factor: f64,
-        ticks: usize,
-    ) {
+    fn processor_tick(&mut self, recipe_data: &RecipeData) -> (Vec<usize>, Vec<usize>) {
+        // Calculates the current company state
         let mut production_rates: Vec<usize> = vec![0; self.old_state.production_rates.len()];
         // Construct company state
         let mut processor_counts = self.old_state.processor_counts.clone();
@@ -98,7 +90,16 @@ impl Company {
                 }
             }
         }
-        let company_state = CompanyState {
+        (production_rates, processor_counts)
+    }
+
+    fn get_company_state(
+        &mut self,
+        market_data: &MarketData,
+        processor_counts: Vec<usize>,
+        production_rates: Vec<usize>,
+    ) -> CompanyState {
+        CompanyState {
             stock: self.stock.resources.values().map(|x| *x as usize).collect(),
             currency: self.currency as usize,
             price_index: market_data
@@ -125,7 +126,21 @@ impl Company {
                 .collect(),
             processor_counts: processor_counts,
             production_rates: production_rates,
-        };
+        }
+    }
+
+    pub fn tick(
+        &mut self,
+        recipe_data: &RecipeData,
+        market_data: &MarketData,
+        processor_price: f64,
+        actionspace: &ActionSpace,
+        train: bool,
+        exploration_factor: f64,
+        ticks: usize,
+    ) {
+        let (production_rates, processor_counts) = self.processor_tick(recipe_data);
+        let company_state = self.get_company_state(market_data, processor_counts, production_rates);
 
         self.old_company_value = self.company_value;
         self.company_value = self.calculate_company_value(market_data, processor_price);
@@ -146,6 +161,7 @@ impl Company {
         match actionspace.actions[action] {
             CompanyAction::Nothing => {
                 // do nothing
+                return;
             }
             CompanyAction::BuyProcessor(recipe) => {
                 if recipe_data.recipes.len() <= recipe {
@@ -290,3 +306,6 @@ impl Company {
         new_company_value
     }
 }
+
+#[cfg(test)]
+mod tests {}
