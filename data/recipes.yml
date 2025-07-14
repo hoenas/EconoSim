@@ -5,7 +5,7 @@ recipes:
       Wood: 1
     products:
       Coal: 1
-    production_speed: 1
+    production_speed: 0.5
   - name: Pottery
     ingredients:
       Coal: 1
@@ -13,18 +13,18 @@ recipes:
       Water: 1
     products:
       Pottery: 1
-    production_speed: 1
+    production_speed: 0.25
   - name: Iron
     ingredients:
       Coal: 1
       IronOre: 1
     products:
       Iron: 1
-    production_speed: 1
+    production_speed: 0.1
   - name: Steel
     ingredients:
       Coal: 1
       Iron: 1
     products:
       Steel: 1
-    production_speed: 1
+    production_speed: 0.01
