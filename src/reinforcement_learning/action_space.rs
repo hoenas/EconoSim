@@ -25,7 +25,7 @@ impl ActionSpace {
             actionspace.push(CompanyAction::SellProcessor(i));
         }
         // TODO: Allow creation of offers / orders that are not according to best price policy
-        for i in 1..resource_count {
+        for i in 0..resource_count {
             actionspace.push(CompanyAction::BuyResource(i, 1));
             actionspace.push(CompanyAction::SellResource(i, 1));
         }
