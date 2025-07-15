@@ -323,6 +323,7 @@ impl Marketplace {
 #[cfg(test)]
 mod tests {
     use super::Marketplace;
+    use crate::market;
     use crate::market::offer::Offer;
     use crate::market::order::Order;
     use crate::world_data::market_data::MarketData;
@@ -365,5 +366,47 @@ mod tests {
         assert_eq!(market_data.order_index.get(&0).unwrap().unwrap().1, 100.0);
         assert!(market_data.order_index.get(&1).unwrap().is_none());
         assert!(market_data.order_index.get(&2).unwrap().is_none());
+    }
+
+    #[test]
+    fn get_highest_order() {
+        let marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(3);
+        let order = Order {
+            company: Some(0),
+            amount: 10.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        let mut highest = order.clone();
+        highest.max_price_per_unit = 99.0;
+        market_data.orders.insert(0, order);
+        market_data.orders.insert(1, highest);
+        let returned_order = marketplace.get_highest_order(0, &mut market_data).unwrap();
+        assert_eq!(returned_order.0, 0);
+        assert_eq!(returned_order.1, 100.0);
+    }
+
+    #[test]
+    fn get_cheapest_offer() {
+        let marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(3);
+        let offer = Offer {
+            company: Some(0),
+            amount: 10.0,
+            price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        let mut cheaper_offer = offer.clone();
+        cheaper_offer.price_per_unit = 99.0;
+        market_data.offers.insert(0, offer);
+        market_data.offers.insert(1, cheaper_offer);
+        let returned_offer = marketplace
+            .get_cheapest_offer(0, &market_data.offers)
+            .unwrap();
+        assert_eq!(returned_offer.0, 1);
+        assert_eq!(returned_offer.1, 99.0);
     }
 }
