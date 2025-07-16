@@ -1,10 +1,10 @@
 ---
 resources:
-  - name: Water
+  # - name: Water
   - name: Wood
-  - name: Clay
+  # - name: Clay
   - name: Coal
-  - name: Pottery
-  - name: IronOre
-  - name: Iron
-  - name: Steel
+  # - name: Pottery
+  # - name: IronOre
+  # - name: Iron
+  # - name: Steel
