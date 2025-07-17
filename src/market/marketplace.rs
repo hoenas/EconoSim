@@ -125,7 +125,7 @@ impl Marketplace {
         offer_handle: OfferHandle,
         market_data: &mut MarketData,
     ) -> Option<&Offer> {
-        Some(&market_data.offers[&offer_handle])
+        market_data.offers.get(&offer_handle)
     }
 
     pub fn get_order_by_handle(
@@ -133,7 +133,7 @@ impl Marketplace {
         order_handle: OrderHandle,
         market_data: &mut MarketData,
     ) -> Option<&Order> {
-        Some(&market_data.orders[&order_handle])
+        market_data.orders.get(&order_handle)
     }
 
     fn execute_orders(&mut self, market_data: &mut MarketData, companies: &mut Vec<Company>) {
@@ -411,6 +411,161 @@ mod tests {
         assert_eq!(returned_offer.1, 99.0);
     }
 
+    #[test]
+    pub fn place_offer() {
+        let mut marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(1);
+        let mut offer = Offer {
+            company: Some(0),
+            amount: -10.0,
+            price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        // Adding a negative offer does not work
+        assert!(marketplace
+            .place_offer(offer.clone(), &mut market_data)
+            .is_none());
+        // Using a non existing resource does not work
+        offer.amount = 10.0;
+        offer.resource = 1;
+        assert!(marketplace
+            .place_offer(offer.clone(), &mut market_data)
+            .is_none());
+        // Adding a positive amount works
+        offer.resource = 0;
+        assert_eq!(
+            marketplace
+                .place_offer(offer.clone(), &mut market_data)
+                .unwrap(),
+            1
+        );
+        assert_eq!(marketplace.statistics.company_offers_placed, 1);
+        // Adding an offer without a company does not increase statistics value
+        // Offer handle is increased
+        offer.company = None;
+        assert_eq!(
+            marketplace
+                .place_offer(offer.clone(), &mut market_data)
+                .unwrap(),
+            2
+        );
+        assert_eq!(marketplace.statistics.company_offers_placed, 1);
+    }
+
+    #[test]
+    pub fn place_order() {
+        let mut marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(1);
+        let mut order = Order {
+            company: Some(0),
+            amount: -10.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        // Adding a negative offer does not work
+        assert!(marketplace
+            .place_order(order.clone(), &mut market_data)
+            .is_none());
+        // Using a non existing resource does not work
+        order.amount = 10.0;
+        order.resource = 1;
+        assert!(marketplace
+            .place_order(order.clone(), &mut market_data)
+            .is_none());
+        // Adding a positive amount works
+        order.resource = 0;
+        assert_eq!(
+            marketplace
+                .place_order(order.clone(), &mut market_data)
+                .unwrap(),
+            1
+        );
+        assert_eq!(marketplace.statistics.company_orders_placed, 1);
+        // Adding an offer without a company does not increase statistics value
+        // Offer handle is increased
+        order.company = None;
+        assert_eq!(
+            marketplace
+                .place_order(order.clone(), &mut market_data)
+                .unwrap(),
+            2
+        );
+        assert_eq!(marketplace.statistics.company_orders_placed, 1);
+    }
+
+    #[test]
+    pub fn get_offer_by_handle() {
+        let mut marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(1);
+        let offer = Offer {
+            company: Some(0),
+            amount: 10.0,
+            price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+
+        marketplace.place_offer(offer, &mut market_data);
+        // Getting an existing offer works
+        let existing_offer = marketplace.get_offer_by_handle(1, &mut market_data);
+        assert!(existing_offer.is_some());
+    }
+
+    #[test]
+    pub fn get_offer_by_handle_non_existing() {
+        let mut marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(1);
+        let offer = Offer {
+            company: Some(0),
+            amount: 10.0,
+            price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+
+        marketplace.place_offer(offer, &mut market_data);
+        // Getting an existing offer works
+        let existing_offer = marketplace.get_offer_by_handle(2, &mut market_data);
+        assert!(existing_offer.is_none());
+    }
+
+    #[test]
+    pub fn get_order_by_handle() {
+        let mut marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(1);
+        let order = Order {
+            company: Some(0),
+            amount: 10.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+
+        marketplace.place_order(order, &mut market_data);
+        // Getting an existing offer works
+        let existing_order = marketplace.get_order_by_handle(1, &mut market_data);
+        assert!(existing_order.is_some());
+    }
+
+    #[test]
+    pub fn get_order_by_handle_non_existing() {
+        let mut marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(1);
+        let order = Order {
+            company: Some(0),
+            amount: 10.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+
+        marketplace.place_order(order, &mut market_data);
+        // Getting an existing offer works
+        let existing_order = marketplace.get_order_by_handle(2, &mut market_data);
+        assert!(existing_order.is_none());
+    }
     #[test]
     fn cleanup_complete_orders() {
         let marketplace = Marketplace::new();
