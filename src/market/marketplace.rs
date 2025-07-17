@@ -323,6 +323,7 @@ impl Marketplace {
 #[cfg(test)]
 mod tests {
     use super::Marketplace;
+    use crate::economy::company::Company;
     use crate::market;
     use crate::market::offer::Offer;
     use crate::market::order::Order;
@@ -408,5 +409,70 @@ mod tests {
             .unwrap();
         assert_eq!(returned_offer.0, 1);
         assert_eq!(returned_offer.1, 99.0);
+    }
+
+    #[test]
+    fn cleanup_complete_orders() {
+        let marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(3);
+        let order = Order {
+            company: Some(0),
+            amount: 100.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        let mut other_order = order.clone();
+        other_order.amount = 0.0;
+        market_data.orders.insert(0, order);
+        market_data.orders.insert(1, other_order);
+        marketplace.cleanup_complete_orders(&mut market_data);
+        assert_eq!(market_data.orders.len(), 1);
+        assert!(market_data.orders.get(&0).is_some());
+        assert!(market_data.orders.get(&1).is_none());
+    }
+    #[test]
+    fn cleanup_dead_orders() {
+        let marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(3);
+        let mut companies: Vec<Company> = Vec::new();
+        companies.push(Company::new("mycomp", 0, 1, 0, 1, 1, 1.0, 1, 1, 1));
+        let order = Order {
+            company: Some(0),
+            amount: 10.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        let mut other_order = order.clone();
+        other_order.time_to_live = 1;
+        market_data.orders.insert(0, order);
+        market_data.orders.insert(1, other_order);
+        marketplace.cleanup_dead_orders(&mut market_data, &mut companies);
+        assert_eq!(market_data.orders.len(), 1);
+        assert!(market_data.orders.get(&0).is_some());
+        assert!(market_data.orders.get(&1).is_none());
+    }
+    #[test]
+    fn cleanup_dead_offers() {
+        let marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(3);
+        let mut companies: Vec<Company> = Vec::new();
+        companies.push(Company::new("mycomp", 0, 1, 0, 1, 1, 1.0, 1, 1, 1));
+        let offer = Offer {
+            company: Some(0),
+            amount: 10.0,
+            price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        let mut other_offer = offer.clone();
+        other_offer.time_to_live = 1;
+        market_data.offers.insert(0, offer);
+        market_data.offers.insert(1, other_offer);
+        marketplace.cleanup_dead_offers(&mut market_data, &mut companies);
+        assert_eq!(market_data.offers.len(), 1);
+        assert!(market_data.offers.get(&0).is_some());
+        assert!(market_data.offers.get(&1).is_none());
     }
 }
