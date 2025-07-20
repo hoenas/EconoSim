@@ -144,7 +144,7 @@ impl Company {
 
         self.old_company_value = self.company_value;
         self.company_value = self.calculate_company_value(market_data, processor_price);
-        let reward = self.company_value - self.old_company_value - 1.0;
+        let reward = self.company_value - self.old_company_value;
         if train {
             self.agent.train(
                 self.old_state.as_f64_vec(),
