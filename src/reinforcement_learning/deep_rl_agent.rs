@@ -45,14 +45,14 @@ impl DeepRLAgent {
     ) -> DeepRLAgent {
         let mut q_network =
             FeedForward::new(&[state_dimensions, 2 * action_dimensions, action_dimensions]);
-        q_network.learning_rate(0.00025);
-        q_network.momentum(0.95);
+        q_network.learning_rate(0.1);
+        q_network.momentum(0.05);
         q_network.activation(Relu);
 
         let mut target_network =
             FeedForward::new(&[state_dimensions, 2 * action_dimensions, action_dimensions]);
-        target_network.learning_rate(0.00025);
-        target_network.momentum(0.95);
+        target_network.learning_rate(0.1);
+        target_network.momentum(0.05);
         target_network.activation(Relu);
 
         let mut agent = DeepRLAgent {
