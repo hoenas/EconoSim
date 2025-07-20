@@ -322,6 +322,8 @@ impl Marketplace {
 
 #[cfg(test)]
 mod tests {
+    use plotters::prelude::LogScalable;
+
     use super::Marketplace;
     use crate::economy::company::Company;
     use crate::market;
@@ -412,7 +414,7 @@ mod tests {
     }
 
     #[test]
-    pub fn place_offer() {
+    fn place_offer() {
         let mut marketplace = Marketplace::new();
         let mut market_data = MarketData::new(1);
         let mut offer = Offer {
@@ -454,7 +456,7 @@ mod tests {
     }
 
     #[test]
-    pub fn place_order() {
+    fn place_order() {
         let mut marketplace = Marketplace::new();
         let mut market_data = MarketData::new(1);
         let mut order = Order {
@@ -496,7 +498,7 @@ mod tests {
     }
 
     #[test]
-    pub fn get_offer_by_handle() {
+    fn get_offer_by_handle() {
         let mut marketplace = Marketplace::new();
         let mut market_data = MarketData::new(1);
         let offer = Offer {
@@ -514,7 +516,7 @@ mod tests {
     }
 
     #[test]
-    pub fn get_offer_by_handle_non_existing() {
+    fn get_offer_by_handle_non_existing() {
         let mut marketplace = Marketplace::new();
         let mut market_data = MarketData::new(1);
         let offer = Offer {
@@ -532,7 +534,7 @@ mod tests {
     }
 
     #[test]
-    pub fn get_order_by_handle() {
+    fn get_order_by_handle() {
         let mut marketplace = Marketplace::new();
         let mut market_data = MarketData::new(1);
         let order = Order {
@@ -550,7 +552,76 @@ mod tests {
     }
 
     #[test]
-    pub fn get_order_by_handle_non_existing() {
+    fn execute_orders() {
+        let mut marketplace = Marketplace::new();
+        let mut market_data = MarketData::new(4);
+        let mut companies: Vec<Company> = Vec::new();
+        companies.push(Company::new("comp1", 0, 1, 0, 1, 1, 1.0, 1, 1, 1));
+        companies.push(Company::new("comp2", 1, 1, 0, 1, 1, 1.0, 1, 1, 1));
+        // Add offers
+        let mut offer = Offer {
+            company: Some(0),
+            amount: 10.0,
+            price_per_unit: 50.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        let mut offer_handle = 0;
+        // Add offers of varying price range
+        for i in 0..4 {
+            offer.resource = i;
+            for k in 1..4 {
+                offer.price_per_unit = k.as_f64() * 50.0;
+                market_data.offers.insert(offer_handle, offer.clone());
+                offer_handle += 1;
+            }
+        }
+        // Add orders
+        // First order should be completely executed
+        let mut order = Order {
+            company: Some(1),
+            amount: 5.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        market_data.orders.insert(0, order.clone());
+        // Second order should be partly executed
+        order.amount = 15.0;
+        order.resource = 1;
+        market_data.orders.insert(1, order.clone());
+        // Third order should not be executed
+        order.resource = 3;
+        order.max_price_per_unit = 10.0;
+        market_data.orders.insert(2, order.clone());
+        marketplace.execute_orders(&mut market_data, &mut companies);
+        marketplace.update_price_index(&mut market_data);
+        marketplace.update_order_index(&mut market_data);
+        // Check company 1 stats
+        assert_eq!(companies[0].currency, 1250.0);
+        assert!(companies[0].stock.resources.get(&0).is_none());
+        assert!(companies[0].stock.resources.get(&1).is_none());
+        assert!(companies[0].stock.resources.get(&2).is_none());
+        // Check company 2 stats
+        assert_eq!(companies[1].currency, 750.0);
+        assert_eq!(*companies[1].stock.resources.get(&0).unwrap(), 5.0);
+        assert_eq!(*companies[1].stock.resources.get(&1).unwrap(), 15.0);
+        assert!(companies[1].stock.resources.get(&2).is_none());
+        assert!(companies[1].stock.resources.get(&3).is_none());
+        // Check open offers
+        assert_eq!(market_data.price_index.get(&0).unwrap().unwrap().1, 50.0);
+        assert_eq!(market_data.price_index.get(&1).unwrap().unwrap().1, 100.0);
+        assert_eq!(market_data.price_index.get(&2).unwrap().unwrap().1, 50.0);
+        assert_eq!(market_data.price_index.get(&3).unwrap().unwrap().1, 50.0);
+        // Check open orders
+        assert_eq!(market_data.order_index.get(&0).unwrap().unwrap().1, 100.0);
+        assert_eq!(market_data.order_index.get(&1).unwrap().unwrap().1, 100.0);
+        assert!(market_data.order_index.get(&2).unwrap().is_none());
+        assert_eq!(market_data.order_index.get(&3).unwrap().unwrap().1, 10.0);
+    }
+
+    #[test]
+    fn get_order_by_handle_non_existing() {
         let mut marketplace = Marketplace::new();
         let mut market_data = MarketData::new(1);
         let order = Order {
