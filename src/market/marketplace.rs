@@ -317,6 +317,7 @@ impl Marketplace {
         self.cleanup_dead_orders(market_data, companies);
         self.cleanup_dead_offers(market_data, companies);
         self.update_order_index(market_data);
+        self.update_price_index(market_data);
     }
 }
 
