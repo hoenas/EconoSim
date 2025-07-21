@@ -30,3 +30,32 @@ impl Consumer {
         self.current_tick += 1;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::economy::consumer;
+
+    #[test]
+    fn tick() {
+        use crate::{economy::consumer::Consumer, market::order::UnprocessedOrder};
+
+        let mut consumer = Consumer::new();
+        let unprocessed_order = UnprocessedOrder {
+            amount: 10.0,
+            max_price_per_unit: 100.0,
+            resource: 0,
+            time_to_live: 100,
+        };
+        consumer.consumption.push(unprocessed_order);
+        consumer.order_creation_ticks = 3;
+        assert_eq!(consumer.orders.len(), 0);
+        consumer.tick();
+        assert_eq!(consumer.orders.len(), 1);
+        consumer.tick();
+        assert_eq!(consumer.orders.len(), 1);
+        consumer.tick();
+        assert_eq!(consumer.orders.len(), 1);
+        consumer.tick();
+        assert_eq!(consumer.orders.len(), 2);
+    }
+}
