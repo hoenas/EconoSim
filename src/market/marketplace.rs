@@ -614,11 +614,25 @@ mod tests {
         assert_eq!(market_data.price_index.get(&1).unwrap().unwrap().1, 100.0);
         assert_eq!(market_data.price_index.get(&2).unwrap().unwrap().1, 50.0);
         assert_eq!(market_data.price_index.get(&3).unwrap().unwrap().1, 50.0);
+        assert_eq!(market_data.offers.get(&0).unwrap().amount, 5.0);
+        assert_eq!(market_data.offers.get(&1).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&2).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&4).unwrap().amount, 5.0);
+        assert_eq!(market_data.offers.get(&5).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&6).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&7).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&8).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&9).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&10).unwrap().amount, 10.0);
+        assert_eq!(market_data.offers.get(&11).unwrap().amount, 10.0);
         // Check open orders
         assert_eq!(market_data.order_index.get(&0).unwrap().unwrap().1, 100.0);
         assert_eq!(market_data.order_index.get(&1).unwrap().unwrap().1, 100.0);
         assert!(market_data.order_index.get(&2).unwrap().is_none());
         assert_eq!(market_data.order_index.get(&3).unwrap().unwrap().1, 10.0);
+        assert_eq!(market_data.orders.get(&0).unwrap().amount, 0.0);
+        assert_eq!(market_data.orders.get(&1).unwrap().amount, 0.0);
+        assert_eq!(market_data.orders.get(&2).unwrap().amount, 15.0);
     }
 
     #[test]
