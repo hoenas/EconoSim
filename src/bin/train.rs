@@ -40,27 +40,13 @@ struct Args {
 fn reset_world(world: &mut World, reference_world: &World) -> World {
     // Reset starting conditions
     let mut new_world = reference_world.clone();
-    for i in 0..reference_world.company_data.companies.len() {
-        let cloned_agent = world.company_data.companies[i].agent.clone();
-        new_world.company_data.companies[i].agent.q_network = cloned_agent.q_network;
-        new_world.company_data.companies[i].agent.target_network = cloned_agent.target_network;
-        new_world.company_data.companies[i].agent.experience_buffer =
-            cloned_agent.experience_buffer.clone();
-        new_world.company_data.companies[i]
-            .agent
-            .target_network_update_tick = cloned_agent.target_network_update_tick;
-    }
+    // TODO: Reimplement with Burn
     return new_world;
 }
 
 fn save_world(world: &World, out_file: &String) {
     log::info!("Saving world...");
-    // Empty experience buffer before saving
-    let mut cloned_world = world.clone();
-    for company in cloned_world.company_data.companies.iter_mut() {
-        company.agent.experience_buffer.clear();
-    }
-    Persistence::write_world_to(&cloned_world, out_file);
+    Persistence::write_world_to(&world, out_file);
 }
 
 fn main() {

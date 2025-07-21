@@ -42,9 +42,6 @@ impl Company {
         state_dimensions: i32,
         action_dimensions: i32,
         discount: f64,
-        experience_replay_batch_size: usize,
-        experience_buffer_length: usize,
-        q_update_ticks: usize,
     ) -> Self {
         Company {
             name: name.to_string(),
@@ -55,14 +52,7 @@ impl Company {
             offers: vec![],
             company_value: 0.0,
             id: company_handle,
-            agent: DeepRLAgent::new(
-                state_dimensions,
-                action_dimensions,
-                discount,
-                experience_replay_batch_size,
-                experience_buffer_length,
-                q_update_ticks,
-            ),
+            agent: DeepRLAgent::new(state_dimensions, action_dimensions, discount),
             old_state: CompanyState::new(resource_count, recipe_count),
             old_company_value: 0.0,
             productive_processor_ticks: 0,

@@ -557,8 +557,8 @@ mod tests {
         let mut marketplace = Marketplace::new();
         let mut market_data = MarketData::new(4);
         let mut companies: Vec<Company> = Vec::new();
-        companies.push(Company::new("comp1", 0, 1, 0, 1, 1, 1.0, 1, 1, 1));
-        companies.push(Company::new("comp2", 1, 1, 0, 1, 1, 1.0, 1, 1, 1));
+        companies.push(Company::new("comp1", 0, 1, 0, 1, 1, 1.0));
+        companies.push(Company::new("comp2", 1, 1, 0, 1, 1, 1.0));
         // Add offers
         let mut offer = Offer {
             company: Some(0),
@@ -677,7 +677,7 @@ mod tests {
         let marketplace = Marketplace::new();
         let mut market_data = MarketData::new(3);
         let mut companies: Vec<Company> = Vec::new();
-        companies.push(Company::new("mycomp", 0, 1, 0, 1, 1, 1.0, 1, 1, 1));
+        companies.push(Company::new("mycomp", 0, 1, 0, 1, 1, 1.0));
         let order = Order {
             company: Some(0),
             amount: 10.0,
@@ -699,7 +699,7 @@ mod tests {
         let marketplace = Marketplace::new();
         let mut market_data = MarketData::new(3);
         let mut companies: Vec<Company> = Vec::new();
-        companies.push(Company::new("mycomp", 0, 1, 0, 1, 1, 1.0, 1, 1, 1));
+        companies.push(Company::new("mycomp", 0, 1, 0, 1, 1, 1.0));
         let offer = Offer {
             company: Some(0),
             amount: 10.0,

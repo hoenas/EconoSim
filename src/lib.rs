@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 pub mod economy;
 pub mod market;
 pub mod persistence;
