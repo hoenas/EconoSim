@@ -1,8 +1,6 @@
 use burn::{
-    backend::Wgpu as B,
     nn::{Linear, LinearConfig, Relu},
     prelude::*,
-    record::PrettyJsonFileRecorder,
 };
 use serde::{Deserialize, Serialize};
 

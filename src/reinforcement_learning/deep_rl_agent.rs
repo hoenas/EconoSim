@@ -1,10 +1,13 @@
 use crate::reinforcement_learning::feed_forward::FeedForward;
-use rand::prelude::*;
+use crate::reinforcement_learning::feed_forward::FeedForwardConfig;
+use burn::module::Module;
+use burn::prelude::*;
+use burn::record::FullPrecisionSettings;
+use burn::record::PrettyJsonFileRecorder;
 use serde::{Deserialize, Serialize};
-use std::vec;
 
-use burn::backend::Wgpu as B;
-
+use crate::reinforcement_learning::backend::Backend as B;
+use burn::backend::wgpu::WgpuDevice::DefaultDevice as device;
 // Sources:
 // https://artemoppermann.com/de/deep-q-learning/
 // https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
@@ -25,17 +28,53 @@ pub struct DeepRLAgent {
     action_dimensions: usize,
     discount: f64,
     last_action: usize,
+    serialization_path: String,
+    #[serde(skip)]
+    network: FeedForward<B>,
 }
 
 impl DeepRLAgent {
-    pub fn new(state_dimensions: i32, action_dimensions: i32, discount: f64) -> DeepRLAgent {
+    pub fn new(
+        state_dimensions: usize,
+        action_dimensions: usize,
+        discount: f64,
+        serialization_path: String,
+    ) -> DeepRLAgent {
+        if let device = Default::default() {
+            todo!()
+        };
         let mut agent = DeepRLAgent {
             action_dimensions: action_dimensions as usize,
             discount: discount,
             last_action: 0,
+            serialization_path: serialization_path,
+            network: FeedForwardConfig::new(
+                state_dimensions,
+                action_dimensions,
+                2 * action_dimensions,
+            )
+            .init::<B>(&device),
         };
         agent.update_q();
         agent
+    }
+
+    pub fn load_model(&mut self) {
+        let device = Default::default();
+        let recorder: PrettyJsonFileRecorder<FullPrecisionSettings> =
+            PrettyJsonFileRecorder::<FullPrecisionSettings>::new();
+        let model = FeedForward::<B>::init(&device);
+        self.network = model
+            .load_file(self.serialization_path, &recorder, &device)
+            .expect("Should be able to load the model");
+    }
+
+    pub fn save_model(&mut self) {
+        let recorder = PrettyJsonFileRecorder::<FullPrecisionSettings>::new();
+        self.network
+            .clone()
+            .save_file(self.serialization_path.clone(), &recorder)
+            .expect("Should be able to save the model");
     }
 
     fn get_max(values: &[f64]) -> (usize, f64) {
@@ -51,12 +90,12 @@ impl DeepRLAgent {
     }
 
     pub fn get_next_state_action(&mut self, state: Vec<f64>, exploration_factor: f64) -> usize {
-        // TODO: Reimplement with Burn
+        todo!("Implement");
         return 0;
     }
 
     fn update_q(&mut self) {
-        // TODO: Implement
+        todo!("Implement");
     }
 
     pub fn train(&mut self, old_state: Vec<f64>, reward: f64, new_state: Vec<f64>, ticks: usize) {
