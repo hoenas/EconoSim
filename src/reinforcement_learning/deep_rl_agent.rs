@@ -6,8 +6,7 @@ use burn::record::FullPrecisionSettings;
 use burn::record::PrettyJsonFileRecorder;
 use serde::{Deserialize, Serialize};
 
-use crate::reinforcement_learning::backend::Backend as B;
-use burn::backend::wgpu::WgpuDevice::DefaultDevice as device;
+use crate::reinforcement_learning::backend::{Backend, Device};
 // Sources:
 // https://artemoppermann.com/de/deep-q-learning/
 // https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
@@ -30,7 +29,7 @@ pub struct DeepRLAgent {
     last_action: usize,
     serialization_path: String,
     #[serde(skip)]
-    network: FeedForward<B>,
+    network: FeedForward<Backend>,
 }
 
 impl DeepRLAgent {
@@ -40,9 +39,7 @@ impl DeepRLAgent {
         discount: f64,
         serialization_path: String,
     ) -> DeepRLAgent {
-        if let device = Default::default() {
-            todo!()
-        };
+        let device = Device::default();
         let mut agent = DeepRLAgent {
             action_dimensions: action_dimensions as usize,
             discount: discount,
@@ -53,19 +50,20 @@ impl DeepRLAgent {
                 action_dimensions,
                 2 * action_dimensions,
             )
-            .init::<B>(&device),
+            .init::<Backend>(&device),
         };
         agent.update_q();
         agent
     }
 
     pub fn load_model(&mut self) {
-        let device = Default::default();
+        let device = Device::default();
         let recorder: PrettyJsonFileRecorder<FullPrecisionSettings> =
             PrettyJsonFileRecorder::<FullPrecisionSettings>::new();
-        let model = FeedForward::<B>::init(&device);
+        let config = FeedForwardConfig::new(1, 1, 1);
+        let model = FeedForwardConfig::init(&config, &device);
         self.network = model
-            .load_file(self.serialization_path, &recorder, &device)
+            .load_file(self.serialization_path.clone(), &recorder, &device)
             .expect("Should be able to load the model");
     }
 
@@ -113,6 +111,8 @@ impl Clone for DeepRLAgent {
             action_dimensions: self.action_dimensions.clone(),
             discount: self.discount.clone(),
             last_action: self.last_action.clone(),
+            serialization_path: self.serialization_path.clone(),
+            network: self.network.clone(),
         }
     }
 }

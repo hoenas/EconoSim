@@ -39,9 +39,10 @@ impl Company {
         company_handle: CompanyHandle,
         resource_count: usize,
         recipe_count: usize,
-        state_dimensions: i32,
-        action_dimensions: i32,
+        state_dimensions: usize,
+        action_dimensions: usize,
         discount: f64,
+        network_serialization_path: String,
     ) -> Self {
         Company {
             name: name.to_string(),
@@ -52,7 +53,12 @@ impl Company {
             offers: vec![],
             company_value: 0.0,
             id: company_handle,
-            agent: DeepRLAgent::new(state_dimensions, action_dimensions, discount),
+            agent: DeepRLAgent::new(
+                state_dimensions,
+                action_dimensions,
+                discount,
+                network_serialization_path,
+            ),
             old_state: CompanyState::new(resource_count, recipe_count),
             old_company_value: 0.0,
             productive_processor_ticks: 0,
